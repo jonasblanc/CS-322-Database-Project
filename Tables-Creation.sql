@@ -12,6 +12,8 @@
 -- there would be 2 distinct victims (mother normal age, and yet to be born child age 99)
 
 --in Victims: attribute victim_seating_position_id || seating_position_id
+-- merge state: Unknown with blank ? => key == null ?
+
 
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
