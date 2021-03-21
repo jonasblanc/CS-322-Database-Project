@@ -114,9 +114,9 @@ CREATE TABLE Lighting
 CREATE TABLE Condition
 (
     weather_id char(1) references Weather(id),
-    road_surface_id char(1) references Weather(id),
-    road_condition_id char(1) references Weather(id),
-    lighting_id char(1) references Weather(id)
+    road_surface_id char(1) references Road_surface(id),
+    road_condition_id char(1) references Road_condition(id),
+    lighting_id char(1) references Lighting(id)
 );
 
 
