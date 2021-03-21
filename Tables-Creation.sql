@@ -78,6 +78,53 @@ CREATE TABLE Population
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
 
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-------------------------------Conditions start-------------------------
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+CREATE TABLE Weather
+(
+    id         char(1) , -- check if if is one of letter
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Road_surface
+(
+    id         char(1) , -- check if if is one of letter
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Road_condition
+(
+    id         char(1) , -- check if if is one of letter
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Lighting
+(
+    id         char(1) , -- check if if is one of letter
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Condition
+(
+    weather_id char(1) references Weather(id),
+    road_surface_id char(1) references Weather(id),
+    road_condition_id char(1) references Weather(id),
+    lighting_id char(1) references Weather(id)
+);
+
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-------------------------------Conditions end---------------------------
+------------------------------------------------------------------------
+
 
 CREATE TABLE Safety_equipment
 (
