@@ -15,6 +15,48 @@
 -- merge state: Unknown with blank ? => key == null ?
 
 -- Used in both victimd and parties
+
+--Check for line between collisions and is_implied in
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-------------------------------Collisions start-------------------------
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+
+CREATE TABLE Type_of_collision
+(
+    id char(1), --check char between a & h
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Collision_severity
+(
+    id int not null CHECK (0<= id and id <= 4),
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Collisions
+(
+    case_id int not null,
+    collision_date date,
+    collision_time timestamp,
+    tow_away char(1) CHECK (tow_away='Y' or tow_away='N'),
+    type_of_collision_id char(1) references Type_of_collision(id),
+    collision_severity_id int not null references Collision_severity(id),
+    PRIMARY KEY (case_id)
+);
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-------------------------------Collisions end---------------------------
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+
+
+
 CREATE TABLE Safety_equipment
 (
     id char(1) not null,
@@ -27,18 +69,6 @@ CREATE TABLE Safety_equipment
 ----------------------------------Victims start-------------------------
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
-drop table Victims
-/
-drop table Victim_degree_of_injury
-/
-drop table Victim_seating_position
-/
-drop table Victim_role
-/
-drop table Victim_ejected
-/
-
-
 CREATE TABLE Victim_degree_of_injury
 (
     id int not null CHECK (0<= id and id<=7), -- can we make sure id and def are consistent
@@ -67,13 +97,6 @@ CREATE TABLE Victim_ejected
     PRIMARY KEY (id)
 );
 
-CREATE TABLE Victim_equiped_with_safety_equipment(
-    victim_id int not null references Victims(id),
-    safety_equipment_id char(1) not null references Safety_equipment(id),
-    PRIMARY KEY(victim_id, safety_equipment_id)
-);
-
-
 CREATE TABLE Victims
 (
     id       int     not null,
@@ -88,6 +111,12 @@ CREATE TABLE Victims
     victim_ejected_id int references Victim_ejected(id),
 --     party_id int not null REFERENCES PARTICIPANT (party_id),
     PRIMARY KEY  (id)
+);
+
+CREATE TABLE Victim_equiped_with_safety_equipment(
+    victim_id int not null references Victims(id),
+    safety_equipment_id char(1) not null references Safety_equipment(id),
+    PRIMARY KEY(victim_id, safety_equipment_id)
 );
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
@@ -151,18 +180,6 @@ CREATE TABLE Other_associated_factor
     PRIMARY KEY (id)
 );
 
-CREATE TABLE Party_equiped_with_safety_equipment(
-    party_id int not null references Parties(id),
-    safety_equipment_id char(1) not null references Safety_equipment(id),
-    PRIMARY KEY(party_id, safety_equipment_id)
-);
-
-CREATE TABLE Party_associated_with_safety_other_associated_factor(
-    party_id int not null references Parties(id),
-    other_associated_factor_id char(1) not null references Other_associated_factor(id),
-    PRIMARY KEY(party_id, safety_equipment_id)
-);
-
 CREATE TABLE Financial_responsibility
 (
     id char(1) not null,
@@ -178,28 +195,41 @@ CREATE TABLE Parties(
     party_age int,
     party_sex char(1),
     -- relation to collision
-    collision_id int not null references Collisions(id),,
+    collision_case_id int not null references Collisions(case_id),
     financial_responsibility_id char(1) references Financial_responsibility(id),
     school_bus_related char(1) not null,
     at_fault char(1) not null,
     -- referenced ids
-    movement_preceding_collision_id char(1) references Movement_preceding_collision_id(id),
+    movement_preceding_collision_id char(1) references Movement_preceding_collision(id),
     party_drug_physical_id char(1) references Party_drug_physical(id),
     party_sobriety_id char(1) references Party_sobriety(id),
     party_type_id int references Party_type(id),
     statewide_vehicle_type_id char(1) references Statewide_vehicle_type(id),
     vehicle_make varchar(150),
     vehicle_year int,
-    cellphone_use_id char(1) Cellphone_use(id),
+    cellphone_use_id char(1) references Cellphone_use(id),
     -- key
     PRIMARY KEY(id)
 );
 
+CREATE TABLE Party_equiped_with_safety_equipment(
+    party_id int not null references Parties(id),
+    safety_equipment_id char(1) not null references Safety_equipment(id),
+    PRIMARY KEY(party_id, safety_equipment_id)
+);
+
+CREATE TABLE Party_associated_with_safety_other_associated_factor(
+    party_id int not null references Parties(id),
+    other_associated_factor_id char(1) not null references Other_associated_factor(id),
+    PRIMARY KEY(party_id, other_associated_factor_id)
+);
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
 ----------------------------------Parties end-------------------------
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
+
+
 
 
 
