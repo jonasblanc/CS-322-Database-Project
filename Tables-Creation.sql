@@ -18,6 +18,8 @@
 
 --Check for line between collisions and is_implied in
 
+--Check if attributes of is_implied_in are done correctly
+
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
 -------------------------------Collisions start-------------------------
