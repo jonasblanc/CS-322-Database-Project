@@ -40,6 +40,27 @@ CREATE TABLE Collision_severity
     PRIMARY KEY (id)
 );
 
+CREATE TABLE Hit_and_run
+(
+    id char(1) not null,
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Primary_collision_factor
+(
+    id char(1) not null,
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Pcf_violation_category
+(
+    id int CHECK((0<= id and id<=20)),
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE Collisions
 (
     case_id               int not null,
@@ -48,6 +69,15 @@ CREATE TABLE Collisions
     tow_away              char(1) CHECK (tow_away = 'Y' or tow_away = 'N'),
     type_of_collision_id  char(1) references Type_of_collision (id),
     collision_severity_id int not null references Collision_severity (id),
+    -- Relations is_judged
+    jurisdiction int,
+    officer_id int,
+    pcf_violation int,
+    pcf_violation_subsection varchar(150), -- NO IDEA WHAT TYPE ?
+    process_date date,
+    hit_and_run_id char(1) references Hit_and_run(id),
+    primary_collision_factor_id char(1) references Primary_collision_factor(id),
+    pcf_violation_category_id int references Pcf_violation_category(id),
     PRIMARY KEY (case_id)
 );
 
