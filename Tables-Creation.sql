@@ -13,14 +13,42 @@
 
 --in Victims: attribute victim_seating_position_id || seating_position_id
 
--- drop table VICTIMS
+-- drop table Victims
 -- /
--- drop table VICTIM_DEGREE_OF_INJURY
+-- drop table Victim_degree_of_injury
 -- /
+-- drop table Victim_seating_position
+-- /
+-- drop table Victim_role
+-- /
+-- drop table Victim_ejected
+-- /
+
 
 CREATE TABLE Victim_degree_of_injury
 (
     id int not null CHECK (0<= id and id<=7), -- can we make sure id and def are consistent
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Victim_seating_position
+(
+    id char(1) , --can we check if id is number or char?
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Victim_role
+(
+    id int not null CHECK (1<= id and id<=6),
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Victim_ejected
+(
+    id int CHECK (0<= id and id<=3), --make sure entity is still created if id is null
     definition varchar(150),
     PRIMARY KEY (id)
 );
@@ -33,12 +61,17 @@ CREATE TABLE Victims
     victim_sex char(1),
 --- referenced ids--
     party_id int not null,
-    victim_degree_of_injury int not null,
---     victim_seating_position_id char(1) ,
+    victim_degree_of_injury_id int not null,
+    victim_seating_position_id char(1),
+    victim_role_id int not null,
+    victim_ejected_id int,
 --     party_id int not null REFERENCES PARTICIPANT (party_id),
     PRIMARY KEY  (id),
-    FOREIGN KEY (victim_degree_of_injury) references Victim_degree_of_injury(id)
---     FOREIGN KEY (victim_seating_position_id) references Victim_seating_position(id) on DELETE CASCADE
+    FOREIGN KEY (victim_degree_of_injury_id) references Victim_degree_of_injury(id),
+    FOREIGN KEY (victim_seating_position_id) references Victim_seating_position(id),
+    FOREIGN KEY (victim_role_id) references Victim_role(id),
+    FOREIGN KEY (victim_ejected_id) references Victim_ejected(id)
+
 );
 
 -- NOTE: 2 ways to create a relation
@@ -49,13 +82,3 @@ CREATE TABLE Victims
 
 -- E.g 1: Victim_seating_position (c.f. https://launchschool.com/books/sql/read/table_relationships one to many paragraph)
 -- Create a single table for entity and link using references
-
--- CREATE TABLE Victim_Seating_Position
--- (
---     id         char(1),
---     definition varchar(50),
---     victim_id  int not null,
---     PRIMARY KEY (id),
---     FOREIGN KEY (victim_id) references Victim(id) ON DELETE CASCADE
---
--- );
