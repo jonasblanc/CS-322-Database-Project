@@ -51,6 +51,27 @@ CREATE TABLE Collisions
     PRIMARY KEY (case_id)
 );
 
+CREATE TABLE Ramp_intersection
+(
+    id         int CHECK (1 <= id and id <= 8),
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Location_type
+(
+    id         char(1),
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Population
+(
+    id         int CHECK (0 <= id and id <= 9),
+    definition varchar(150),
+    PRIMARY KEY (id)
+);
+
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
 -------------------------------Collisions end---------------------------
