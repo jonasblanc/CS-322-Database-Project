@@ -1,4 +1,4 @@
----------------------Design implementations---------------------
+----------------------------Design implementations---------------------
 -- Boolean => char(1)
 -- definition => varchar(150)
 -- Table_name (First letter upper case then underscores)
@@ -13,16 +13,21 @@
 
 --in Victims: attribute victim_seating_position_id || seating_position_id
 
--- drop table Victims
--- /
--- drop table Victim_degree_of_injury
--- /
--- drop table Victim_seating_position
--- /
--- drop table Victim_role
--- /
--- drop table Victim_ejected
--- /
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+----------------------------------Victims start-------------------------
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+drop table Victims
+/
+drop table Victim_degree_of_injury
+/
+drop table Victim_seating_position
+/
+drop table Victim_role
+/
+drop table Victim_ejected
+/
 
 
 CREATE TABLE Victim_degree_of_injury
@@ -73,6 +78,25 @@ CREATE TABLE Victims
     FOREIGN KEY (victim_ejected_id) references Victim_ejected(id)
 
 );
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+----------------------------------Victims end---------------------------
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- NOTE: 2 ways to create a relation
 
