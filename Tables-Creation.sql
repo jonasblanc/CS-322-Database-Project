@@ -20,6 +20,10 @@
 
 --Check if attributes of is_implied_in are done correctly
 
+--Pcf_violation_subsection: which type?
+
+--County_city_location: which type?
+
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
 -------------------------------Conditions start-------------------------
@@ -56,14 +60,24 @@ CREATE TABLE Lighting
 CREATE TABLE Condition
 (
     id                int,
-    weather_id        char(1) references Weather (id),
     road_surface_id   char(1) references Road_surface (id),
-    road_condition_id char(1) references Road_condition (id),
     lighting_id       char(1) references Lighting (id),
     PRIMARY KEY (id)
 );
 
+CREATE TABLE Condition_with_weather
+(
+    condition_id           int     references Condition (id),
+    wheather_id            char(1) references Weather (id),
+    PRIMARY KEY (condition_id, wheather_id)
+);
 
+CREATE TABLE Condition_with_road_condition
+(
+    condition_id           int     references Condition (id),
+    road_condition_id      char(1) references Road_condition (id),
+    PRIMARY KEY (condition_id, road_condition_id)
+);
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
 -------------------------------Conditions end---------------------------
@@ -85,28 +99,28 @@ CREATE TABLE Type_of_collision
 
 CREATE TABLE Collision_severity
 (
-    id         int not null CHECK (0 <= id and id <= 4),
+    id         int CHECK (0 <= id and id <= 4),
     definition varchar(150),
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Hit_and_run
 (
-    id         char(1) not null,
+    id         char(1),
     definition varchar(150),
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Primary_collision_factor
 (
-    id         char(1) not null,
+    id         char(1),
     definition varchar(150),
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Pcf_violation_category
 (
-    id         int CHECK ((0 <= id and id <= 20)),
+    id         int CHECK ((0 <= id and id <= 24)),
     definition varchar(150),
     PRIMARY KEY (id)
 );
@@ -134,17 +148,17 @@ CREATE TABLE Population
 
 CREATE TABLE Collisions
 (
-    case_id                     int not null,
+    case_id                     int,
     collision_date              date,
     collision_time              timestamp,
     tow_away                    char(1) CHECK (tow_away = 'Y' or tow_away = 'N'),
     type_of_collision_id        char(1) references Type_of_collision (id),
     collision_severity_id       int not null references Collision_severity (id),
     -- Relations is_judged
-    jurisdiction                int,
+    jurisdiction                int CHECK (0<=jurisdiction and jurisdiction <= 9999),
     officer_id                  int,
     pcf_violation               int,
-    pcf_violation_subsection    varchar(150), -- NO IDEA WHAT TYPE ?
+    pcf_violation_subsection    varchar(150),
     process_date                date,
     hit_and_run_id              char(1) references Hit_and_run (id),
     primary_collision_factor_id char(1) references Primary_collision_factor (id),
@@ -166,7 +180,7 @@ CREATE TABLE Collisions
 
 CREATE TABLE Safety_equipment
 (
-    id         char(1) not null,
+    id         char(1),
     definition varchar(150),
     PRIMARY KEY (id)
 );
@@ -178,7 +192,7 @@ CREATE TABLE Safety_equipment
 ------------------------------------------------------------------------
 CREATE TABLE Victim_degree_of_injury
 (
-    id         int not null CHECK (0 <= id and id <= 7), -- can we make sure id and def are consistent
+    id         int CHECK (0 <= id and id <= 7), -- can we make sure id and def are consistent
     definition varchar(150),
     PRIMARY KEY (id)
 );
@@ -192,7 +206,7 @@ CREATE TABLE Victim_seating_position
 
 CREATE TABLE Victim_role
 (
-    id         int not null CHECK (1 <= id and id <= 6),
+    id         int CHECK (1 <= id and id <= 6),
     definition varchar(150),
     PRIMARY KEY (id)
 );
@@ -206,7 +220,7 @@ CREATE TABLE Victim_ejected
 
 CREATE TABLE Victims
 (
-    id                         int     not null,
+    id                         int,
     pregnant                   char(1) not null,
     victim_age                 int,
     victim_sex                 char(1),
@@ -222,7 +236,7 @@ CREATE TABLE Victims
 
 CREATE TABLE Victim_equiped_with_safety_equipment
 (
-    victim_id           int     not null references Victims (id),
+    victim_id           int     references Victims (id),
     safety_equipment_id char(1) not null references Safety_equipment (id),
     PRIMARY KEY (victim_id, safety_equipment_id)
 );
@@ -242,42 +256,42 @@ CREATE TABLE Victim_equiped_with_safety_equipment
 -- Related entities with party: one to many
 CREATE TABLE Movement_preceding_collision
 (
-    id         char(1) not null,
+    id         char(1),
     definition varchar(150),
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Party_drug_physical
 (
-    id         char(1) not null,
+    id         char(1),
     definition varchar(150),
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Party_sobriety
 (
-    id         char(1) not null,
+    id         char(1),
     definition varchar(150),
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Party_type
 (
-    id         int not null,
+    id         int,
     definition varchar(150),
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Statewide_vehicle_type
 (
-    id         char(1) not null,
+    id         char(1),
     definition varchar(150),
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Cellphone_use
 (
-    id         char(1) not null,
+    id         char(1),
     definition varchar(150),
     PRIMARY KEY (id)
 );
@@ -286,14 +300,14 @@ CREATE TABLE Cellphone_use
 -- Relations with party: Many to many
 CREATE TABLE Other_associated_factor
 (
-    id         char(1) not null,
+    id         char(1),
     definition varchar(150),
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Financial_responsibility
 (
-    id         char(1) not null,
+    id         char(1),
     definition varchar(150),
     PRIMARY KEY (id)
 );
@@ -301,7 +315,7 @@ CREATE TABLE Financial_responsibility
 -- Parties
 CREATE TABLE Parties
 (
-    id                              int     not null,
+    id                              int,
     -- Atributes
     hazardous_materials             char(1),
     party_age                       int,
