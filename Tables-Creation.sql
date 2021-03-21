@@ -78,6 +78,13 @@ CREATE TABLE Collisions
     hit_and_run_id char(1) references Hit_and_run(id),
     primary_collision_factor_id char(1) references Primary_collision_factor(id),
     pcf_violation_category_id int references Pcf_violation_category(id),
+    -- Relations happens_in
+    county_city_location  int,
+    ramp_intersection_id  int references Ramp_intersection (id),
+    location_type_id  char(1) references Location_type (id),
+    population_id  int references Population (id),
+    -- Relations happens_under
+    condition_id int references Condition (id),
     PRIMARY KEY (case_id)
 );
 
@@ -143,10 +150,12 @@ CREATE TABLE Lighting
 
 CREATE TABLE Condition
 (
+    id int,
     weather_id char(1) references Weather(id),
     road_surface_id char(1) references Road_surface(id),
     road_condition_id char(1) references Road_condition(id),
-    lighting_id char(1) references Lighting(id)
+    lighting_id char(1) references Lighting(id),
+    PRIMARY KEY (id)
 );
 
 
