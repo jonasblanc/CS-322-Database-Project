@@ -1,0 +1,4 @@
+- statewide_vehicle_type type blank to allow specifying vehicle_make when state is blank
+- Party number need to be stored ? or only useful to connect to victim ?
+- Convert cellphone_use to boolean ? => look at mandatory SQL request to see if all states are needed
+
