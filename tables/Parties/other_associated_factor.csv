@@ -1,0 +1,23 @@
+id,description
+A,Violation
+E,Vision Obscurements
+F,Inattention
+G,Stop and Go Traffic
+H,Entering/Leaving Ramp
+I,Previous Collision
+J,Unfamiliar With Road
+K,Defective Vehicle Equipment
+L,Uninvolved Vehicle
+M,Other
+N,None Apparent
+O,Runaway Vehicle
+P,"Inattention, Cell Phone"
+Q,"Inattention, Electronic Equip."
+R,"Inattention, Radio/CD"
+S,"Inattention, Smoking"
+T,"Inattention, Eating"
+U,"Inattention, Children"
+V,"Inattention, Animal"
+W,"Inattention, Personal Hygiene"
+X,"Inattention, Reading"
+Y,"Inattention, Other"
