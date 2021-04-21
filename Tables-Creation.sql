@@ -264,7 +264,7 @@ CREATE TABLE Movement_preceding_collision
 CREATE TABLE Party_drug_physical
 (
     id         char(1),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
