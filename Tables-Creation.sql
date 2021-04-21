@@ -221,7 +221,7 @@ CREATE TABLE Victim_ejected
 CREATE TABLE Victims
 (
     id                         int,
-    pregnant                   char(1) not null,
+    pregnant                   char(1), --removed not null
     victim_age                 int,
     victim_sex                 char(1),
 --- referenced ids--
