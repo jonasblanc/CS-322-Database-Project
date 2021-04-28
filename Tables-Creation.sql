@@ -208,6 +208,7 @@ CREATE TABLE Victims
     id                         int,
     victim_age                 int,
     victim_sex                 char(1),
+    unborn                     char(1),
 --- referenced ids--
     victim_degree_of_injury_id int not null references Victim_degree_of_injury (id),
     victim_seating_position_id char(1) references Victim_seating_position (id),
