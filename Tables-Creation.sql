@@ -6,6 +6,7 @@
 -- No state is null, set key to null
 -- In an entity: id is id of current entity, create new attribute table_id for referenced id
 
+
 --Questions
 
 --victim age/ pregnancy: age of 999 implies that person is not yet born, so that we don't lose information about the age of the mother
@@ -26,7 +27,7 @@
 
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
--------------------------------Conditions start-------------------------
+-------------------------------Collisions start-------------------------
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
 CREATE TABLE Weather
@@ -57,38 +58,21 @@ CREATE TABLE Lighting
     PRIMARY KEY (id)
 );
 
-CREATE TABLE Condition
-(
-    id                int not null unique,
-    road_surface_id   char(1) references Road_surface (id),
-    lighting_id       char(1) references Lighting (id),
-    PRIMARY KEY (id)
-);
 
-CREATE TABLE Condition_with_weather
+CREATE TABLE Collision_with_weather
 (
-    condition_id           int     references Condition (id),
+    case_id                 int    references Collisions (case_id),
     wheather_id            char(1) references Weather (id),
-    PRIMARY KEY (condition_id, wheather_id)
+    PRIMARY KEY (case_id, wheather_id)
 );
 
-CREATE TABLE Condition_with_road_condition
+CREATE TABLE Collision_with_road_condition
 (
-    condition_id           int     references Condition (id),
+    case_id                 int     references Collisions (case_id),
     road_condition_id      char(1) references Road_condition (id),
-    PRIMARY KEY (condition_id, road_condition_id)
+    PRIMARY KEY (case_id, road_condition_id)
 );
-------------------------------------------------------------------------
-------------------------------------------------------------------------
--------------------------------Conditions end---------------------------
-------------------------------------------------------------------------
 
-
-------------------------------------------------------------------------
-------------------------------------------------------------------------
--------------------------------Collisions start-------------------------
-------------------------------------------------------------------------
-------------------------------------------------------------------------
 
 CREATE TABLE Type_of_collision
 (
@@ -169,7 +153,8 @@ CREATE TABLE Collisions
     location_type_id            char(1) references Location_type (id),
     population_id               int references Population (id),
     -- Relations happens_under
-    condition_id                int references Condition (id),
+    lighting_id                char(1) references Lighting (id),
+    road_surface_id            char(1) references Road_surface (id),
     PRIMARY KEY (case_id)
 );
 ------------------------------------------------------------------------
