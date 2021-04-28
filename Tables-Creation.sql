@@ -133,8 +133,7 @@ CREATE TABLE Population
 CREATE TABLE Collisions
 (
     case_id                     int,
-    collision_date              date,
-    collision_time              timestamp,
+    collision_date_time         timestamp(6),
     tow_away                    char(1) CHECK (tow_away = 'Y' or tow_away = 'N'),
     type_of_collision_id        char(1) references Type_of_collision (id),
     collision_severity_id       int not null references Collision_severity (id),
