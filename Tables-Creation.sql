@@ -206,16 +206,14 @@ CREATE TABLE Victim_ejected
 CREATE TABLE Victims
 (
     id                         int,
-    pregnant                   char(1), --removed not null
     victim_age                 int,
     victim_sex                 char(1),
 --- referenced ids--
-    party_id                   int     not null,
     victim_degree_of_injury_id int     not null references Victim_degree_of_injury (id),
     victim_seating_position_id char(1) references Victim_seating_position (id),
     victim_role_id             int     not null references Victim_role (id),
     victim_ejected_id          int references Victim_ejected (id),
---     party_id int not null REFERENCES PARTICIPANT (party_id),
+    party_id int not null REFERENCES Parties (id),
     PRIMARY KEY (id)
 );
 
