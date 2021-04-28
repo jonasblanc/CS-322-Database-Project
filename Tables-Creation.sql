@@ -61,15 +61,15 @@ CREATE TABLE Lighting
 
 CREATE TABLE Collision_with_weather
 (
-    case_id                 int    references Collisions (case_id),
-    wheather_id            char(1) references Weather (id),
+    case_id     int references Collisions (case_id),
+    wheather_id char(1) references Weather (id),
     PRIMARY KEY (case_id, wheather_id)
 );
 
 CREATE TABLE Collision_with_road_condition
 (
-    case_id                 int     references Collisions (case_id),
-    road_condition_id      char(1) references Road_condition (id),
+    case_id           int references Collisions (case_id),
+    road_condition_id char(1) references Road_condition (id),
     PRIMARY KEY (case_id, road_condition_id)
 );
 
@@ -139,7 +139,7 @@ CREATE TABLE Collisions
     type_of_collision_id        char(1) references Type_of_collision (id),
     collision_severity_id       int not null references Collision_severity (id),
     -- Relations is_judged
-    jurisdiction                int CHECK (0<=jurisdiction and jurisdiction <= 9999),
+    jurisdiction                int CHECK (0 <= jurisdiction and jurisdiction <= 9999),
     officer_id                  int,
     pcf_violation               int,
     pcf_violation_subsection    varchar(150),
@@ -153,8 +153,8 @@ CREATE TABLE Collisions
     location_type_id            char(1) references Location_type (id),
     population_id               int references Population (id),
     -- Relations happens_under
-    lighting_id                char(1) references Lighting (id),
-    road_surface_id            char(1) references Road_surface (id),
+    lighting_id                 char(1) references Lighting (id),
+    road_surface_id             char(1) references Road_surface (id),
     PRIMARY KEY (case_id)
 );
 ------------------------------------------------------------------------
@@ -209,17 +209,17 @@ CREATE TABLE Victims
     victim_age                 int,
     victim_sex                 char(1),
 --- referenced ids--
-    victim_degree_of_injury_id int     not null references Victim_degree_of_injury (id),
+    victim_degree_of_injury_id int not null references Victim_degree_of_injury (id),
     victim_seating_position_id char(1) references Victim_seating_position (id),
-    victim_role_id             int     not null references Victim_role (id),
+    victim_role_id             int not null references Victim_role (id),
     victim_ejected_id          int references Victim_ejected (id),
-    party_id int not null REFERENCES Parties (id),
+    party_id                   int not null REFERENCES Parties (id),
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Victim_equiped_with_safety_equipment
 (
-    victim_id           int     references Victims (id),
+    victim_id           int references Victims (id),
     safety_equipment_id char(1) not null references Safety_equipment (id),
     PRIMARY KEY (victim_id, safety_equipment_id)
 );
