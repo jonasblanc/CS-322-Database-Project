@@ -32,34 +32,34 @@
 CREATE TABLE Weather
 (
     id         char(1), -- check if if is one of letter
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Road_surface
 (
     id         char(1), -- check if if is one of letter
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Road_condition
 (
     id         char(1), -- check if if is one of letter
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Lighting
 (
     id         char(1), -- check if if is one of letter
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Condition
 (
-    id                int,
+    id                int not null unique,
     road_surface_id   char(1) references Road_surface (id),
     lighting_id       char(1) references Lighting (id),
     PRIMARY KEY (id)
@@ -93,56 +93,56 @@ CREATE TABLE Condition_with_road_condition
 CREATE TABLE Type_of_collision
 (
     id         char(1), --check char between a & h
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Collision_severity
 (
     id         int CHECK (0 <= id and id <= 4),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Hit_and_run
 (
     id         char(1),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Primary_collision_factor
 (
     id         char(1),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Pcf_violation_category
 (
     id         int CHECK ((0 <= id and id <= 24)),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Ramp_intersection
 (
     id         int CHECK (1 <= id and id <= 8),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Location_type
 (
     id         char(1),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Population
 (
     id         int CHECK (0 <= id and id <= 9),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
@@ -181,7 +181,7 @@ CREATE TABLE Collisions
 CREATE TABLE Safety_equipment
 (
     id         char(1),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
@@ -193,28 +193,28 @@ CREATE TABLE Safety_equipment
 CREATE TABLE Victim_degree_of_injury
 (
     id         int CHECK (0 <= id and id <= 7), -- can we make sure id and def are consistent
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Victim_seating_position
 (
     id         char(1), --can we check if id is number or char?
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Victim_role
 (
     id         int CHECK (1 <= id and id <= 6),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Victim_ejected
 (
     id         int CHECK (0 <= id and id <= 3), --make sure entity is still created if id is null
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
@@ -257,42 +257,42 @@ CREATE TABLE Victim_equiped_with_safety_equipment
 CREATE TABLE Movement_preceding_collision
 (
     id         char(1),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Party_drug_physical
 (
     id         char(1),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Party_sobriety
 (
     id         char(1),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Party_type
 (
     id         int,
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Statewide_vehicle_type
 (
     id         char(1),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Cellphone_use
 (
     id         char(1),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
@@ -301,14 +301,14 @@ CREATE TABLE Cellphone_use
 CREATE TABLE Other_associated_factor
 (
     id         char(1),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE Financial_responsibility
 (
     id         char(1),
-    definition varchar(150),
+    definition varchar(150) not null,
     PRIMARY KEY (id)
 );
 
