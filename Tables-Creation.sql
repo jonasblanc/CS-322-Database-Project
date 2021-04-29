@@ -183,7 +183,7 @@ CREATE TABLE Victim_degree_of_injury
 
 CREATE TABLE Victim_seating_position
 (
-    id         char(1), --can we check if id is number or char?
+    id         int, --can we check if id is number or char?
     definition varchar(150) not null,
     PRIMARY KEY (id)
 );
@@ -210,7 +210,7 @@ CREATE TABLE Victims
     unborn                     char(1),
 --- referenced ids--
     victim_degree_of_injury_id int not null references Victim_degree_of_injury (id),
-    victim_seating_position_id char(1) references Victim_seating_position (id),
+    victim_seating_position_id int references Victim_seating_position (id),
     victim_role_id             int not null references Victim_role (id),
     victim_ejected_id          int references Victim_ejected (id),
     party_id                   int not null REFERENCES Parties (id),
