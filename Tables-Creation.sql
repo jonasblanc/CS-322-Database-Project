@@ -132,14 +132,14 @@ CREATE TABLE Population
 
 CREATE TABLE Collisions
 (
-    case_id                     int,
-    collision_date_time         timestamp(6),
-    tow_away                    char(1) CHECK (tow_away = 'Y' or tow_away = 'N'),
+    case_id                     char(64),
+    collision_datetime          timestamp(6),
+    tow_away                    char(1) CHECK (tow_away = 'T' or tow_away = 'F'),
     type_of_collision_id        char(1) references Type_of_collision (id),
     collision_severity_id       int not null references Collision_severity (id),
     -- Relations is_judged
     jurisdiction                int CHECK (0 <= jurisdiction and jurisdiction <= 9999),
-    officer_id                  int,
+    officer_id                  varchar(10),
     pcf_violation               int,
     pcf_violation_subsection    varchar(150),
     process_date                date,
