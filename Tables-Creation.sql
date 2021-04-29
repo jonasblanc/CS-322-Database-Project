@@ -61,14 +61,14 @@ CREATE TABLE Lighting
 
 CREATE TABLE Collision_with_weather
 (
-    case_id     int references Collisions (case_id),
+    case_id     char(64) references Collisions (case_id),
     wheather_id char(1) references Weather (id),
     PRIMARY KEY (case_id, wheather_id)
 );
 
 CREATE TABLE Collision_with_road_condition
 (
-    case_id           int references Collisions (case_id),
+    case_id           char(64) references Collisions (case_id),
     road_condition_id char(1) references Road_condition (id),
     PRIMARY KEY (case_id, road_condition_id)
 );
