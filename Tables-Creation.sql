@@ -304,10 +304,10 @@ CREATE TABLE Parties
     party_age                       int,
     party_sex                       char(1),
     -- relation to collision
-    collision_case_id               char(64)     not null references Collisions (case_id),
+    collision_case_id               char(64) not null references Collisions (case_id),
     financial_responsibility_id     char(1) references Financial_responsibility (id),
-    school_bus_related              char(1) not null,
-    at_fault                        char(1) not null,
+    school_bus_related              char(1)  not null,
+    at_fault                        char(1)  not null,
     -- referenced ids
     movement_preceding_collision_id char(1) references Movement_preceding_collision (id),
     party_drug_physical_id          char(1) references Party_drug_physical (id),
