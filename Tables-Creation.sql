@@ -306,7 +306,7 @@ CREATE TABLE Parties
     -- relation to collision
     collision_case_id               char(64) not null references Collisions (case_id),
     financial_responsibility_id     char(1) references Financial_responsibility (id),
-    school_bus_related              char(1)  not null,
+    school_bus_related              char(1),
     at_fault                        char(1)  not null,
     -- referenced ids
     movement_preceding_collision_id char(1) references Movement_preceding_collision (id),
