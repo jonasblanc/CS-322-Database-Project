@@ -133,7 +133,8 @@ CREATE TABLE Population
 CREATE TABLE Collisions
 (
     case_id                     char(64),
-    collision_datetime          timestamp(6),
+    collision_date              date,
+    collision_time              timestamp(6),
     tow_away                    char(1) CHECK (tow_away = 'T' or tow_away = 'F'),
     type_of_collision_id        char(1) references Type_of_collision (id),
     collision_severity_id       int not null references Collision_severity (id),
@@ -217,9 +218,9 @@ CREATE TABLE Victims
     PRIMARY KEY (id)
 );
 
-CREATE TABLE Victim_equiped_with_safety_equipment
+CREATE TABLE Victim_equipped_with_safety_equipment
 (
-    victim_id           int references Victims (id),
+    victim_id           int     not null references Victims (id),
     safety_equipment_id char(1) not null references Safety_equipment (id),
     PRIMARY KEY (victim_id, safety_equipment_id)
 );
@@ -316,12 +317,12 @@ CREATE TABLE Parties
     statewide_vehicle_type_id       char(1) references Statewide_vehicle_type (id),
     vehicle_make                    varchar(150),
     vehicle_year                    int,
-    cellphone_use_id                char(1) references Cellphone_use (id),
+    cellphone_use_id                char(1) default 'D' references Cellphone_use (id), --default 'D'  makes it faster
     -- key
     PRIMARY KEY (id)
 );
 
-CREATE TABLE Party_equiped_with_safety_equipment
+CREATE TABLE Party_equipped_with_safety_equipment
 (
     party_id            int     not null references Parties (id),
     safety_equipment_id char(1) not null references Safety_equipment (id),
