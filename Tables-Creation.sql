@@ -61,14 +61,14 @@ CREATE TABLE Lighting
 
 CREATE TABLE Collision_with_weather
 (
-    case_id     int references Collisions (case_id),
+    case_id     char(64) references Collisions (case_id),
     wheather_id char(1) references Weather (id),
     PRIMARY KEY (case_id, wheather_id)
 );
 
 CREATE TABLE Collision_with_road_condition
 (
-    case_id           int references Collisions (case_id),
+    case_id           char(64) references Collisions (case_id),
     road_condition_id char(1) references Road_condition (id),
     PRIMARY KEY (case_id, road_condition_id)
 );
@@ -132,14 +132,14 @@ CREATE TABLE Population
 
 CREATE TABLE Collisions
 (
-    case_id                     int,
-    collision_date_time         timestamp(6),
-    tow_away                    char(1) CHECK (tow_away = 'Y' or tow_away = 'N'),
+    case_id                     char(64),
+    collision_datetime          timestamp(6),
+    tow_away                    char(1) CHECK (tow_away = 'T' or tow_away = 'F'),
     type_of_collision_id        char(1) references Type_of_collision (id),
     collision_severity_id       int not null references Collision_severity (id),
     -- Relations is_judged
     jurisdiction                int CHECK (0 <= jurisdiction and jurisdiction <= 9999),
-    officer_id                  int,
+    officer_id                  varchar(10),
     pcf_violation               int,
     pcf_violation_subsection    varchar(150),
     process_date                date,
@@ -183,7 +183,7 @@ CREATE TABLE Victim_degree_of_injury
 
 CREATE TABLE Victim_seating_position
 (
-    id         char(1), --can we check if id is number or char?
+    id         int, --can we check if id is number or char?
     definition varchar(150) not null,
     PRIMARY KEY (id)
 );
@@ -210,7 +210,7 @@ CREATE TABLE Victims
     unborn                     char(1),
 --- referenced ids--
     victim_degree_of_injury_id int not null references Victim_degree_of_injury (id),
-    victim_seating_position_id char(1) references Victim_seating_position (id),
+    victim_seating_position_id int references Victim_seating_position (id),
     victim_role_id             int not null references Victim_role (id),
     victim_ejected_id          int references Victim_ejected (id),
     party_id                   int not null REFERENCES Parties (id),
@@ -304,10 +304,10 @@ CREATE TABLE Parties
     party_age                       int,
     party_sex                       char(1),
     -- relation to collision
-    collision_case_id               int     not null references Collisions (case_id),
+    collision_case_id               char(64) not null references Collisions (case_id),
     financial_responsibility_id     char(1) references Financial_responsibility (id),
-    school_bus_related              char(1) not null,
-    at_fault                        char(1) not null,
+    school_bus_related              char(1),
+    at_fault                        char(1)  not null,
     -- referenced ids
     movement_preceding_collision_id char(1) references Movement_preceding_collision (id),
     party_drug_physical_id          char(1) references Party_drug_physical (id),
