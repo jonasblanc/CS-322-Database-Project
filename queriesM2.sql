@@ -8,7 +8,7 @@ FROM
         (Q1) AS X,
         (Q2) AS Y
         FROM DUAL 
-)A
+)A;
 
 
 --QUERY1--
@@ -120,7 +120,7 @@ FROM
                 ORDER BY COUNT(*) DESC
                 FETCH FIRST 1 ROW ONLY)) AS MOST_COMMON_VICTIM_SEATING_POSITION
     FROM DUAL 
-)A
+)A;
 
 
 --QUERY9--
@@ -146,7 +146,7 @@ SELECT
                     FROM SAFETY_EQUIPMENT SE
                     WHERE LOWER(SE.DEFINITION) LIKE '%belt use%')) THEN 1.0 ELSE 0 END)
 AS FRACTION_WITH_BELT
-FROM VICTIMS V2
+FROM VICTIMS V2;
 
 -- V3 best one
 SELECT  
