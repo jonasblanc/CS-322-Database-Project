@@ -100,6 +100,42 @@ SELECT
 AS FRACTION_WITH_BELT
 FROM VICTIMS V2
 
+-- V3 best one
+SELECT  
+    (
+        (SELECT COUNT(*)
+        FROM VICTIMS V
+        WHERE V.ID IN
+            (   SELECT VEWSE.VICTIM_ID 
+                FROM VICTIM_EQUIPPED_WITH_SAFETY_EQUIPMENT VEWSE
+                WHERE VEWSE.SAFETY_EQUIPMENT_ID IN
+                    (   SELECT SE.ID 
+                        FROM SAFETY_EQUIPMENT SE
+                        WHERE LOWER(SE.DEFINITION) LIKE '%belt use%')))
+        / (SELECT COUNT(*) FROM VICTIMS) 
+    )
+AS FRACTION_WITH_BELT
+FROM DUAL;
+
+-- V4 with all participants being victim + party
+SELECT  
+    (
+        (SELECT COUNT(*)
+        FROM VICTIMS V
+        WHERE V.ID IN
+            (   SELECT VEWSE.VICTIM_ID 
+                FROM VICTIM_EQUIPPED_WITH_SAFETY_EQUIPMENT VEWSE
+                WHERE VEWSE.SAFETY_EQUIPMENT_ID IN
+                    (   SELECT SE.ID 
+                        FROM SAFETY_EQUIPMENT SE
+                        WHERE LOWER(SE.DEFINITION) LIKE '%belt use%')))
+        / ((SELECT COUNT(*) FROM VICTIMS) 
+        + (SELECT COUNT(*) FROM PARTIES) 
+        )
+    )
+AS FRACTION_WITH_BELT
+FROM DUAL;
+
 --QUERY 10--
 -- What about collision with null hour ? Count them as well ?
 SELECT EXTRACT(HOUR FROM C.COLLISION_DATE) AS HOUR, COUNT(*)/(  SELECT COUNT(*) FROM COLLISIONS) AS FRACTION_COLLISIONS 
