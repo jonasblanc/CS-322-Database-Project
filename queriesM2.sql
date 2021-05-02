@@ -224,3 +224,36 @@ FROM
 SELECT EXTRACT(HOUR FROM C.COLLISION_TIME) AS HOUR, COUNT(*)/(  SELECT COUNT(*) FROM COLLISIONS) AS FRACTION_COLLISIONS 
 FROM COLLISIONS C
 GROUP BY EXTRACT(HOUR FROM C.COLLISION_TIME);
+
+-- TABLE CREATION TRIAL
+
+CREATE TABLE Collisions_J --need to keep escape " and remove ' (problems w/ officer_id)
+--collision_date <-> process_date makes it slow
+(
+    case_id                     char(64),
+    collision_date              timestamp(6),
+    collision_time              timestamp(6),--null
+    --tow_away                    char(1) CHECK (tow_away = 'T' or tow_away = 'F'),
+    --type_of_collision_id        char(1) references Type_of_collision (id),
+    --collision_severity_id       int not null references Collision_severity (id),
+    -- Relations is_judged
+    --jurisdiction                int CHECK (0 <= jurisdiction and jurisdiction <= 9999),
+    --officer_id                  varchar(10),
+    --pcf_violation               int,
+    --pcf_violation_subsection    varchar(150),
+    process_date                date,
+    --hit_and_run_id              char(1) references Hit_and_run (id),
+    --primary_collision_factor_id char(1) references Primary_collision_factor (id),
+    --pcf_violation_category_id   int references Pcf_violation_category (id),
+    -- Relations happens_in
+    --county_city_location        int,
+    --ramp_intersection_id        int references Ramp_intersection (id),
+    --location_type_id            char(1) references Location_type (id),
+    --population_id               int references Population (id),
+    -- Relations happens_under
+   -- lighting_id                 char(1) references Lighting (id),
+    --road_surface_id             char(1) references Road_surface (id),
+    PRIMARY KEY (case_id)
+);
+
+--drop table Collisions_J cascade constraints;
