@@ -76,6 +76,8 @@ WHERE VSP.ID IN
         FETCH FIRST 1 ROW ONLY);
 
 --QUERY9--
+
+-- Not working
 SELECT COUNT(*)/(SELECT COUNT(*) FROM VICTIMS V1) AS FRACTION_WITH_BELT 
 FROM VICTIMS V2
 WHERE V2.ID IN
@@ -85,6 +87,18 @@ WHERE V2.ID IN
             (   SELECT SE.ID 
                 FROM SAFETY_EQUIPMENT SE
                 WHERE LOWER(SE.DEFINITION) LIKE '%belt use%'));
+
+-- Working but inefficient
+SELECT
+    AVG(CASE WHEN V2.ID IN
+        (   SELECT VEWSE.VICTIM_ID 
+            FROM VICTIM_EQUIPPED_WITH_SAFETY_EQUIPMENT VEWSE
+            WHERE VEWSE.SAFETY_EQUIPMENT_ID IN
+                (   SELECT SE.ID 
+                    FROM SAFETY_EQUIPMENT SE
+                    WHERE LOWER(SE.DEFINITION) LIKE '%belt use%')) THEN 1.0 ELSE 0 END)
+AS FRACTION_WITH_BELT
+FROM VICTIMS V2
 
 --QUERY 10--
 -- What about collision with null hour ? Count them as well ?
