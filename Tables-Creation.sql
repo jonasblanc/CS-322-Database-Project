@@ -58,22 +58,6 @@ CREATE TABLE Lighting
     PRIMARY KEY (id)
 );
 
-
-CREATE TABLE Collision_with_weather
-(
-    case_id     char(64) references Collisions (case_id),
-    wheather_id char(1) references Weather (id),
-    PRIMARY KEY (case_id, wheather_id)
-);
-
-CREATE TABLE Collision_with_road_condition
-(
-    case_id           char(64) references Collisions (case_id),
-    road_condition_id char(1) references Road_condition (id),
-    PRIMARY KEY (case_id, road_condition_id)
-);
-
-
 CREATE TABLE Type_of_collision
 (
     id         char(1), --check char between a & h
@@ -157,6 +141,21 @@ CREATE TABLE Collisions
     road_surface_id             char(1) references Road_surface (id),
     PRIMARY KEY (case_id)
 );
+
+CREATE TABLE Collision_with_weather
+(
+    case_id     char(64) references Collisions (case_id),
+    wheather_id char(1) references Weather (id),
+    PRIMARY KEY (case_id, wheather_id)
+);
+
+CREATE TABLE Collision_with_road_condition
+(
+    case_id           char(64) references Collisions (case_id),
+    road_condition_id char(1) references Road_condition (id),
+    PRIMARY KEY (case_id, road_condition_id)
+);
+
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
 -------------------------------Collisions end---------------------------
@@ -169,67 +168,6 @@ CREATE TABLE Safety_equipment
     definition varchar(150) not null,
     PRIMARY KEY (id)
 );
-
-------------------------------------------------------------------------
-------------------------------------------------------------------------
-----------------------------------Victims start-------------------------
-------------------------------------------------------------------------
-------------------------------------------------------------------------
-CREATE TABLE Victim_degree_of_injury
-(
-    id         int CHECK (0 <= id and id <= 7), -- can we make sure id and def are consistent
-    definition varchar(150) not null,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE Victim_seating_position
-(
-    id         int, --can we check if id is number or char?
-    definition varchar(150) not null,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE Victim_role
-(
-    id         int CHECK (1 <= id and id <= 6),
-    definition varchar(150) not null,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE Victim_ejected
-(
-    id         int CHECK (0 <= id and id <= 3), --make sure entity is still created if id is null
-    definition varchar(150) not null,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE Victims
-(
-    id                         int,
-    victim_age                 int,
-    victim_sex                 char(1),
-    unborn                     char(1),
---- referenced ids--
-    victim_degree_of_injury_id int not null references Victim_degree_of_injury (id),
-    victim_seating_position_id int references Victim_seating_position (id),
-    victim_role_id             int not null references Victim_role (id),
-    victim_ejected_id          int references Victim_ejected (id),
-    party_id                   int not null REFERENCES Parties (id),
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE Victim_equipped_with_safety_equipment
-(
-    victim_id           int     not null references Victims (id),
-    safety_equipment_id char(1) not null references Safety_equipment (id),
-    PRIMARY KEY (victim_id, safety_equipment_id)
-);
-------------------------------------------------------------------------
-------------------------------------------------------------------------
-----------------------------------Victims end---------------------------
-------------------------------------------------------------------------
-------------------------------------------------------------------------
-
 
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
@@ -340,6 +278,68 @@ CREATE TABLE Party_associated_with_safety_other_associated_factor
 ----------------------------------Parties end-------------------------
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+----------------------------------Victims start-------------------------
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+CREATE TABLE Victim_degree_of_injury
+(
+    id         int CHECK (0 <= id and id <= 7), -- can we make sure id and def are consistent
+    definition varchar(150) not null,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Victim_seating_position
+(
+    id         int, --can we check if id is number or char?
+    definition varchar(150) not null,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Victim_role
+(
+    id         int CHECK (1 <= id and id <= 6),
+    definition varchar(150) not null,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Victim_ejected
+(
+    id         int CHECK (0 <= id and id <= 3), --make sure entity is still created if id is null
+    definition varchar(150) not null,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Victims
+(
+    id                         int,
+    victim_age                 int,
+    victim_sex                 char(1),
+    unborn                     char(1),
+--- referenced ids--
+    victim_degree_of_injury_id int not null references Victim_degree_of_injury (id),
+    victim_seating_position_id int references Victim_seating_position (id),
+    victim_role_id             int not null references Victim_role (id),
+    victim_ejected_id          int references Victim_ejected (id),
+    party_id                   int not null REFERENCES Parties (id),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE Victim_equipped_with_safety_equipment
+(
+    victim_id           int     not null references Victims (id),
+    safety_equipment_id char(1) not null references Safety_equipment (id),
+    PRIMARY KEY (victim_id, safety_equipment_id)
+);
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+----------------------------------Victims end---------------------------
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+
+
 
 
 -- NOTE: 2 ways to create a relation
