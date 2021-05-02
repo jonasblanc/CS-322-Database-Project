@@ -6,25 +6,6 @@
 -- No state is null, set key to null
 -- In an entity: id is id of current entity, create new attribute table_id for referenced id
 
-
---Questions
-
---victim age/ pregnancy: age of 999 implies that person is not yet born, so that we don't lose information about the age of the mother
--- there would be 2 distinct victims (mother normal age, and yet to be born child age 99)
-
---in Victims: attribute victim_seating_position_id || seating_position_id
--- merge state: Unknown with blank ? => key == null ?
-
--- Used in both victimd and parties
-
---Check for line between collisions and is_implied in
-
---Check if attributes of is_implied_in are done correctly
-
---Pcf_violation_subsection: which type?
-
---County_city_location: which type?
-
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
 -------------------------------Collisions start-------------------------
@@ -144,15 +125,15 @@ CREATE TABLE Collisions
 
 CREATE TABLE Collision_with_weather
 (
-    case_id     char(64) references Collisions (case_id),
-    wheather_id char(1) references Weather (id),
-    PRIMARY KEY (case_id, wheather_id)
+    case_id    char(64) references Collisions (case_id) on delete cascade,
+    weather_id char(1) references Weather (id) on delete cascade,
+    PRIMARY KEY (case_id, weather_id)
 );
 
 CREATE TABLE Collision_with_road_condition
 (
-    case_id           char(64) references Collisions (case_id),
-    road_condition_id char(1) references Road_condition (id),
+    case_id           char(64) references Collisions (case_id) on delete cascade,
+    road_condition_id char(1) references Road_condition (id) on delete cascade,
     PRIMARY KEY (case_id, road_condition_id)
 );
 
@@ -238,7 +219,7 @@ CREATE TABLE Financial_responsibility
 CREATE TABLE Parties
 (
     id                              int,
-    -- Atributes
+    -- Attributes
     hazardous_materials             char(1),
     party_age                       int,
     party_sex                       char(1),
@@ -262,15 +243,15 @@ CREATE TABLE Parties
 
 CREATE TABLE Party_equipped_with_safety_equipment
 (
-    party_id            int     not null references Parties (id),
-    safety_equipment_id char(1) not null references Safety_equipment (id),
+    party_id            int     not null references Parties (id) on delete cascade,
+    safety_equipment_id char(1) not null references Safety_equipment (id) on delete cascade,
     PRIMARY KEY (party_id, safety_equipment_id)
 );
 
 CREATE TABLE Party_associated_with_safety_other_associated_factor
 (
-    party_id                   int     not null references Parties (id),
-    other_associated_factor_id char(1) not null references Other_associated_factor (id),
+    party_id                   int     not null references Parties (id) on delete cascade,
+    other_associated_factor_id char(1) not null references Other_associated_factor (id) on delete cascade,
     PRIMARY KEY (party_id, other_associated_factor_id)
 );
 ------------------------------------------------------------------------
@@ -329,8 +310,8 @@ CREATE TABLE Victims
 
 CREATE TABLE Victim_equipped_with_safety_equipment
 (
-    victim_id           int     not null references Victims (id),
-    safety_equipment_id char(1) not null references Safety_equipment (id),
+    victim_id           int     not null references Victims (id) on delete cascade,
+    safety_equipment_id char(1) not null references Safety_equipment (id) on delete cascade,
     PRIMARY KEY (victim_id, safety_equipment_id)
 );
 ------------------------------------------------------------------------
@@ -338,15 +319,3 @@ CREATE TABLE Victim_equipped_with_safety_equipment
 ----------------------------------Victims end---------------------------
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
-
-
-
-
--- NOTE: 2 ways to create a relation
-
--- E.g 1: Was_Ejected / Victim ejected (c.f Lecture notes 3 slide 28)
---          Step 1: Create entity
---          Step 2: create table for relation and link both tables using foreign keys
-
--- E.g 1: Victim_seating_position (c.f. https://launchschool.com/books/sql/read/table_relationships one to many paragraph)
--- Create a single table for entity and link using references
