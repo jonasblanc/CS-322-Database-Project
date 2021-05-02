@@ -15,7 +15,7 @@
 --in Victims: attribute victim_seating_position_id || seating_position_id
 -- merge state: Unknown with blank ? => key == null ?
 
--- Used in both victimd and parties
+-- Used in both victims and parties
 
 --Check for line between collisions and is_implied in
 
@@ -144,15 +144,15 @@ CREATE TABLE Collisions
 
 CREATE TABLE Collision_with_weather
 (
-    case_id     char(64) references Collisions (case_id),
-    wheather_id char(1) references Weather (id),
-    PRIMARY KEY (case_id, wheather_id)
+    case_id     char(64) references Collisions (case_id) on delete cascade,
+    weather_id char(1) references Weather (id) on delete cascade,
+    PRIMARY KEY (case_id, weather_id)
 );
 
 CREATE TABLE Collision_with_road_condition
 (
-    case_id           char(64) references Collisions (case_id),
-    road_condition_id char(1) references Road_condition (id),
+    case_id           char(64) references Collisions (case_id) on delete cascade,
+    road_condition_id char(1) references Road_condition (id) on delete cascade,
     PRIMARY KEY (case_id, road_condition_id)
 );
 
@@ -238,7 +238,7 @@ CREATE TABLE Financial_responsibility
 CREATE TABLE Parties
 (
     id                              int,
-    -- Atributes
+    -- Attributes
     hazardous_materials             char(1),
     party_age                       int,
     party_sex                       char(1),
@@ -262,15 +262,15 @@ CREATE TABLE Parties
 
 CREATE TABLE Party_equipped_with_safety_equipment
 (
-    party_id            int     not null references Parties (id),
-    safety_equipment_id char(1) not null references Safety_equipment (id),
+    party_id            int     not null references Parties (id) on delete cascade,
+    safety_equipment_id char(1) not null references Safety_equipment (id) on delete cascade,
     PRIMARY KEY (party_id, safety_equipment_id)
 );
 
 CREATE TABLE Party_associated_with_safety_other_associated_factor
 (
-    party_id                   int     not null references Parties (id),
-    other_associated_factor_id char(1) not null references Other_associated_factor (id),
+    party_id                   int     not null references Parties (id) on delete cascade,
+    other_associated_factor_id char(1) not null references Other_associated_factor (id) on delete cascade,
     PRIMARY KEY (party_id, other_associated_factor_id)
 );
 ------------------------------------------------------------------------
@@ -329,8 +329,8 @@ CREATE TABLE Victims
 
 CREATE TABLE Victim_equipped_with_safety_equipment
 (
-    victim_id           int     not null references Victims (id),
-    safety_equipment_id char(1) not null references Safety_equipment (id),
+    victim_id           int     not null references Victims (id) on delete cascade,
+    safety_equipment_id char(1) not null references Safety_equipment (id) on delete cascade,
     PRIMARY KEY (victim_id, safety_equipment_id)
 );
 ------------------------------------------------------------------------
