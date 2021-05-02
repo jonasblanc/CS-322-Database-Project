@@ -148,7 +148,7 @@ SELECT
        /(SELECT COUNT(*) FROM COLLISIONS)
    )
 AS FRACTION_DARK 
-FROM DUAL
+FROM DUAL;
 
 --QUERY8--
 --INDIVIDUAL, would it make sense to group them? How?
