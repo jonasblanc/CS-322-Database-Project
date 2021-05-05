@@ -80,7 +80,7 @@ WHERE C.TYPE_OF_COLLISION_ID = 'G' and V.VICTIM_AGE > 100)
     GROUP BY CASE_ID) groupedtt
 ON tt.CASE_ID = groupedtt.CASE_ID
 AND tt.VICTIM_AGE = groupedtt.MaxDateTime
-ORDER BY tt.CASE_ID
+ORDER BY tt.CASE_ID;
 --Check if by pedestrian collision they mean type of collision G (vehicle/pedestrian)
 --change names tt and groupedtt
 --change C.TYPE_OF_COLLISION_ID = 'G' to something nicer
