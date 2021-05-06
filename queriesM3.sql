@@ -66,7 +66,7 @@ FROM
 
         WHERE UNINJURED.DEFINITION = ALL_DEGREES.DEFINITION
         ORDER BY NUMBER_NO_INJURIES/NUMBER_ALL_DEGREE_INJURIES DESC
-)
+);
 
 
 
@@ -226,17 +226,20 @@ FROM
 
         WHERE UNINJURED.DEFINITION = ALL_DEGREES.DEFINITION
         ORDER BY NUMBER_NO_INJURIES/NUMBER_ALL_DEGREE_INJURIES DESC
-)
+);
+
+
+--Query 6
+-- For each of the top-3 most populated cities, show the city location, population, and the bottom-10
+-- collisions in terms of average victim age (show collision id and average victim age).
 
 
 
-
+--QUERY 7
 --Find all collisions that satisfy the following:
 -- the collision was of type pedestrian and all victims were above 100 years
 -- For each of the qualifying collisions, show the collision id and the age of the eldest collision
 -- victim.
-
---QUERY 7
 
 -- get all victims >100 in pedestrian collisions
 -- SELECT V.ID, V.VICTIM_AGE, V.PARTY_ID
@@ -318,7 +321,13 @@ ORDER BY tt.CASE_ID;
 SELECT  COUNTY_CITY_LOCATION, Count(*) as n_col
 From COLLISIONS C
 GROUP BY COUNTY_CITY_LOCATION
-ORDER BY n_col DESC FETCH NEXT 5 ROWS ONLY
+ORDER BY n_col DESC FETCH NEXT 10 ROWS ONLY
 
--- WHERE rownum <5
-
+--Query 10
+--Are there more accidents around dawn, dusk, during the day, or during the night?
+-- In case lighting information is not available, assume the following: the dawn is between 06:00 and 07:59,
+-- and dusk between 18:00 and 19:59 in the period September 1 - March 31; and dawn between 04:00 and 06:00,
+-- and dusk between 20:00 and 21:59 in the period April 1 - August 31.
+-- The remaining corresponding times are night and day.
+-- Display the number of accidents, and to which group it belongs, and make your conclusion based on
+-- absolute number of accidents in the given 4 periods.
