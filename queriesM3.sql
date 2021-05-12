@@ -1,3 +1,15 @@
+-- QUERY 1: Work in progress: L
+-- QUERY 2: Done
+-- QUERY 3: Done
+-- QUERY 4: Done
+-- QUERY 5: Done
+-- QUERY 6: Work in progress: Z
+-- QUERY 7: Done
+-- QUERY 8: Done
+-- QUERY 9: Done
+-- QUERY 10: Work in progress: Z
+
+
 --Questions:
 --          Query 8: What do you mean by vehicle_id
 
@@ -108,6 +120,7 @@ FROM (
 
 
 -- QUERY 5
+-- Half of city == 270
 SELECT COUNT(*) AS NUMBER_OF_VEHICLE_TYPE
 FROM    (   SELECT COUNT(*)
             FROM    (   SELECT P.STATEWIDE_VEHICLE_TYPE_ID AS TYPE, C.COUNTY_CITY_LOCATION, COUNT(*)
@@ -200,9 +213,14 @@ ORDER BY tt.CASE_ID;
 --change C.TYPE_OF_COLLISION_ID = 'G' to something nicer
 
 --Query 8
---Find the vehicles that have participated in at least 10 collisions.
--- Show the vehicle id and number of collisions the vehicle has participated in,
--- sorted according to number of collisions (descending order).
+SELECT SVT.DEFINITION ,COLLISIONS_PER_VEHICLE.MAKE, COLLISIONS_PER_VEHICLE.YEAR, COLLISIONS_PER_VEHICLE.NUMBER_COLLISION
+FROM    (   SELECT P.STATEWIDE_VEHICLE_TYPE_ID AS TYPE, P.VEHICLE_MAKE AS MAKE, P.VEHICLE_YEAR AS YEAR, COUNT(*) AS NUMBER_COLLISION
+            FROM PARTIES P
+            WHERE P.STATEWIDE_VEHICLE_TYPE_ID IS NOT NULL AND P.VEHICLE_MAKE IS NOT NULL AND  P.VEHICLE_YEAR IS NOT NULL
+            GROUP BY (P.STATEWIDE_VEHICLE_TYPE_ID, P.VEHICLE_MAKE, P.VEHICLE_YEAR)
+            ORDER BY COUNT(*) DESC
+        )COLLISIONS_PER_VEHICLE, STATEWIDE_VEHICLE_TYPE SVT
+WHERE COLLISIONS_PER_VEHICLE.TYPE = SVT.ID
 
 --Query 9
 --Find the top-10 (with respect to number of collisions) cities. For each of these cities, show the city
