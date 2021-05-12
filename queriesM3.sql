@@ -14,6 +14,48 @@
 --          Query 8: What do you mean by vehicle_id
 
 
+--QUERY 1
+-- question: * is it possible to use aliases for groupby to avoid copy-pasting cases?
+--           * Is it possible to do only 1 query which retrieves at the same time for each category, the number at fault
+--             and the total number (at fault + not at fault) by for example using a predicate in the count?
+SELECT FAULT.age_range, ROUND(NUMBER_AT_FAULT/TOTAL_NUMBER, 3) as RATIO_AT_FAULT FROM
+(SELECT case
+    when P.PARTY_AGE <= 18 then 'Underage'
+    when P.PARTY_AGE between 19 and 21 then 'young 1'
+    when P.PARTY_AGE between 22 and 24 then 'young 2'
+    when P.PARTY_AGE between 24 and 60 then 'adult'
+    when P.PARTY_AGE between 61 and 64 then 'elder 1'
+    when P.PARTY_AGE >= 65 then 'elder 2' end as age_range, COUNT(*) AS NUMBER_AT_FAULT FROM PARTIES P
+WHERE P.AT_FAULT = 'T' and P.PARTY_AGE IS NOT NULL
+group by (case
+    when P.PARTY_AGE <= 18 then 'Underage'
+    when P.PARTY_AGE between 19 and 21 then 'young 1'
+    when P.PARTY_AGE between 22 and 24 then 'young 2'
+    when P.PARTY_AGE between 24 and 60 then 'adult'
+    when P.PARTY_AGE between 61 and 64 then 'elder 1'
+    when P.PARTY_AGE >= 65 then 'elder 2'
+ END)) FAULT,
+
+(SELECT case
+    when P.PARTY_AGE <= 18 then 'Underage'
+    when P.PARTY_AGE between 19 and 21 then 'young 1'
+    when P.PARTY_AGE between 22 and 24 then 'young 2'
+    when P.PARTY_AGE between 24 and 60 then 'adult'
+    when P.PARTY_AGE between 61 and 64 then 'elder 1'
+    when P.PARTY_AGE >= 65 then 'elder 2' end as age_range, COUNT(*) AS TOTAL_NUMBER FROM PARTIES P
+WHERE P.PARTY_AGE IS NOT NULL
+group by (case
+    when P.PARTY_AGE <= 18 then 'Underage'
+    when P.PARTY_AGE between 19 and 21 then 'young 1'
+    when P.PARTY_AGE between 22 and 24 then 'young 2'
+    when P.PARTY_AGE between 24 and 60 then 'adult'
+    when P.PARTY_AGE between 61 and 64 then 'elder 1'
+    when P.PARTY_AGE >= 65 then 'elder 2'
+ END)) TOTAL
+WHERE TOTAL.age_range=FAULT.age_range
+ORDER BY NUMBER_AT_FAULT/TOTAL_NUMBER DESC;
+
+
 -- Query 2
 SELECT SWT.DEFINITION, STATS_COLLISIONS_HOLE.NUMBER_OF_COLLISION
 FROM STATEWIDE_VEHICLE_TYPE SWT,
