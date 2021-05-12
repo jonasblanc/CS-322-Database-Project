@@ -232,9 +232,10 @@ FROM
 --Query 6
 -- For each of the top-3 most populated cities, show the city location, population, and the bottom-10
 -- collisions in terms of average victim age (show collision id and average victim age).
-SELECT  distinct (C.POPULATION_ID), P.DEFINITION FROM COLLISIONS C --where c.POPULATION_ID is not null
-INNER JOIN POPULATION P ON P.ID=C.POPULATION_ID;
-
+SELECT  distinct (C.POPULATION_ID), P.DEFINITION
+FROM COLLISIONS C --where c.POPULATION_ID is not null
+INNER JOIN POPULATION P ON P.ID=C.POPULATION_ID
+WHERE INSTR(LOWER(P.DEFINITION), 'over') > 0;
 
 --QUERY 7
 --Find all collisions that satisfy the following:
