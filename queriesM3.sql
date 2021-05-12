@@ -157,7 +157,7 @@ ORDER BY tt.CASE_ID;
 
 SELECT COUNTY_CITY_LOCATION, Count(*)
 From COLLISIONS C
-GROUP BY COUNTY_CITY_LOCATION
+GROUP BY COUNTY_CITY_LOCATION;
 --Questions:
 --          Query 8: What do you mean by vehicle_id
 
@@ -232,7 +232,8 @@ FROM
 --Query 6
 -- For each of the top-3 most populated cities, show the city location, population, and the bottom-10
 -- collisions in terms of average victim age (show collision id and average victim age).
-
+SELECT  distinct (C.POPULATION_ID), P.DEFINITION FROM COLLISIONS C --where c.POPULATION_ID is not null
+INNER JOIN POPULATION P ON P.ID=C.POPULATION_ID;
 
 
 --QUERY 7
@@ -321,7 +322,7 @@ ORDER BY tt.CASE_ID;
 SELECT  COUNTY_CITY_LOCATION, Count(*) as n_col
 From COLLISIONS C
 GROUP BY COUNTY_CITY_LOCATION
-ORDER BY n_col DESC FETCH NEXT 10 ROWS ONLY
+ORDER BY n_col DESC FETCH NEXT 10 ROWS ONLY;
 
 --Query 10
 --Are there more accidents around dawn, dusk, during the day, or during the night?
@@ -331,3 +332,178 @@ ORDER BY n_col DESC FETCH NEXT 10 ROWS ONLY
 -- The remaining corresponding times are night and day.
 -- Display the number of accidents, and to which group it belongs, and make your conclusion based on
 -- absolute number of accidents in the given 4 periods.
+
+-- Select count(*)
+-- from (Select distinct EXTRACT(HOUR FROM C.COLLISION_TIME), EXTRACT(MINUTE FROM C.COLLISION_TIME) AS HOUR
+-- From COLLISIONS C);
+
+-- Select count(c.COLLISION_TIME) as dawn_1
+-- From COLLISIONS C
+-- where extract(hour from c.COLLISION_TIME) between '6' and '7';
+--
+-- SELECT TO_CHAR(COLLISION_TIME, 'MM-DD')
+-- from COLLISIONS c;
+--
+--
+-- SELECT COUNT(case when TO_CHAR(C.COLLISION_TIME, 'MM-DD') between '04-1' and '08-31' THEN C.COLLISION_TIME END)
+-- FROM COLLISIONS C;
+--
+-- --check edge case
+-- SELECT
+--     COUNT(CASE WHEN extract(hour from c.COLLISION_TIME) between '6' and '7' then 1 ELSE NULL END) as Dawn,
+--     COUNT(CASE WHEN extract(hour from c.COLLISION_TIME) between '18' and '19'then 1 ELSE NULL END) as Dusk
+-- from COLLISIONS c;
+--
+-- --period 1
+-- SELECT c.COLLISION_TIME as winter
+-- from COLLISIONS c
+-- where extract(month from c.COLLISION_DATE) not between '4' and '8';
+--
+-- -- period 2
+-- SELECT c.COLLISION_TIME as summer
+-- from COLLISIONS c
+-- where extract(month from c.COLLISION_DATE) between '4' and '8';
+--
+-- SELECT
+--     COUNT(CASE WHEN extract(hour from winter) between '6' and '7' then 1 ELSE NULL END) as winter_Dawn,
+--     COUNT(CASE WHEN extract(hour from winter) between '18' and '19'then 1 ELSE NULL END) as winter_Dusk
+-- from
+--     (SELECT c.COLLISION_TIME as winter
+--     from COLLISIONS c
+--     where extract(month from c.COLLISION_DATE) not between '4' and '8');
+--
+-- SELECT
+--     COUNT(CASE WHEN extract(hour from summer) between '4' and '5' then 1 ELSE NULL END) as summer_Dawn,--need to add 6:00
+--     COUNT(CASE WHEN extract(hour from summer) between '20' and '21'then 1 ELSE NULL END) as summer_Dusk
+-- from
+--     (SELECT c.COLLISION_TIME as summer
+--     from COLLISIONS c
+--     where extract(month from c.COLLISION_DATE) between '4' and '8');
+--
+-- SELECT
+-- *
+--
+-- FROM
+-- (
+--     SELECT
+--         (SELECT
+--             COUNT(CASE WHEN extract(hour from winter) between '6' and '7' then 1 ELSE NULL END) as winter_Dawn,
+--             COUNT(CASE WHEN extract(hour from winter) between '18' and '19'then 1 ELSE NULL END) as winter_Dusk
+--         from
+--             (SELECT c.COLLISION_TIME as winter
+--             from COLLISIONS c
+--             where extract(month from c.COLLISION_DATE) not between '4' and '8'))
+--         AS X,
+--         (SELECT
+--             COUNT(CASE WHEN extract(hour from summer) between '4' and '5' then 1 ELSE NULL END) as summer_Dawn,--need to add 6:00
+--             COUNT(CASE WHEN extract(hour from summer) between '20' and '21'then 1 ELSE NULL END) as summer_Dusk
+--         from
+--             (SELECT c.COLLISION_TIME as summer
+--             from COLLISIONS c
+--             where extract(month from c.COLLISION_DATE) between '4' and '8'))
+--         AS Y
+--     FROM DUAL
+-- )A;
+--
+-- SELECT
+-- dawn.s + dawn.w as Dawn
+--
+-- FROM
+-- (
+--     SELECT
+--         (SELECT
+--             COUNT(CASE WHEN extract(hour from winter) between '6' and '7' then 1 ELSE NULL END) as winter_Dawn
+-- --             COUNT(CASE WHEN extract(hour from winter) between '18' and '19'then 1 ELSE NULL END) as winter_Dusk
+--         from
+--             (SELECT c.COLLISION_TIME as winter
+--             from COLLISIONS c
+--             where extract(month from c.COLLISION_DATE) not between '4' and '8'))
+--         AS w,
+--         (SELECT
+--             COUNT(CASE WHEN extract(hour from summer) between '4' and '5' then 1 ELSE NULL END) as summer_Dawn--need to add 6:00
+-- --             COUNT(CASE WHEN extract(hour from summer) between '20' and '21'then 1 ELSE NULL END) as summer_Dusk
+--         from
+--             (SELECT c.COLLISION_TIME as summer
+--             from COLLISIONS c
+--             where extract(month from c.COLLISION_DATE) between '4' and '8'))
+--         AS s
+--     FROM DUAL
+-- )dawn;
+--
+-- SELECT
+-- dusk.s + dusk.w as Dusk
+--
+-- FROM
+-- (
+--     SELECT
+--         (SELECT
+--             COUNT(CASE WHEN extract(hour from winter) between '18' and '19'then 1 ELSE NULL END) as winter_Dusk
+--         from
+--             (SELECT c.COLLISION_TIME as winter
+--             from COLLISIONS c
+--             where extract(month from c.COLLISION_DATE) not between '4' and '8'))
+--         AS w,
+--         (SELECT
+--             COUNT(CASE WHEN extract(hour from summer) between '20' and '21'then 1 ELSE NULL END) as summer_Dusk
+--         from
+--             (SELECT c.COLLISION_TIME as summer
+--             from COLLISIONS c
+--             where extract(month from c.COLLISION_DATE) between '4' and '8'))
+--         AS s
+--     FROM DUAL
+-- )dusk;
+
+SELECT
+collisions_per_time_interval.dawn_collisions, collisions_per_time_interval.dusk_collisions
+
+FROM
+(
+    SELECT
+        (SELECT
+dawn.s + dawn.w as Dawn
+
+FROM
+(
+    SELECT
+        (SELECT
+            COUNT(CASE WHEN extract(hour from winter) between '6' and '7' then 1 ELSE NULL END) as winter_Dawn
+--             COUNT(CASE WHEN extract(hour from winter) between '18' and '19'then 1 ELSE NULL END) as winter_Dusk
+        from
+            (SELECT c.COLLISION_TIME as winter
+            from COLLISIONS c
+            where extract(month from c.COLLISION_DATE) not between '4' and '8'))
+        AS w,
+        (SELECT
+            COUNT(CASE WHEN extract(hour from summer) between '4' and '5' then 1 ELSE NULL END) as summer_Dawn--need to add 6:00
+--             COUNT(CASE WHEN extract(hour from summer) between '20' and '21'then 1 ELSE NULL END) as summer_Dusk
+        from
+            (SELECT c.COLLISION_TIME as summer
+            from COLLISIONS c
+            where extract(month from c.COLLISION_DATE) between '4' and '8'))
+        AS s
+    FROM DUAL
+)dawn) AS dawn_collisions,
+        (SELECT
+dusk.s + dusk.w as Dusk
+
+FROM
+(
+    SELECT
+        (SELECT
+            COUNT(CASE WHEN extract(hour from winter) between '18' and '19'then 1 ELSE NULL END) as winter_Dusk
+        from
+            (SELECT c.COLLISION_TIME as winter
+            from COLLISIONS c
+            where extract(month from c.COLLISION_DATE) not between '4' and '8'))
+        AS w,
+        (SELECT
+            COUNT(CASE WHEN extract(hour from summer) between '20' and '21'then 1 ELSE NULL END) as summer_Dusk
+        from
+            (SELECT c.COLLISION_TIME as summer
+            from COLLISIONS c
+            where extract(month from c.COLLISION_DATE) between '4' and '8'))
+        AS s
+    FROM DUAL
+)dusk) AS dusk_collisions
+        FROM DUAL
+)collisions_per_time_interval;
