@@ -175,7 +175,7 @@ FROM    (   SELECT COUNT(*)
             HAVING COUNT(*) > ( SELECT COUNT(UNIQUE(C.COUNTY_CITY_LOCATION))/2
                                 FROM COLLISIONS C 
                               )
-) TYPE_TO_CITY_COUNT
+) TYPE_TO_CITY_COUNT;
 
 
 
@@ -262,7 +262,7 @@ FROM    (   SELECT P.STATEWIDE_VEHICLE_TYPE_ID AS TYPE, P.VEHICLE_MAKE AS MAKE, 
             GROUP BY (P.STATEWIDE_VEHICLE_TYPE_ID, P.VEHICLE_MAKE, P.VEHICLE_YEAR)
             ORDER BY COUNT(*) DESC
         )COLLISIONS_PER_VEHICLE, STATEWIDE_VEHICLE_TYPE SVT
-WHERE COLLISIONS_PER_VEHICLE.TYPE = SVT.ID
+WHERE COLLISIONS_PER_VEHICLE.TYPE = SVT.ID;
 
 --Query 9
 --Find the top-10 (with respect to number of collisions) cities. For each of these cities, show the city
@@ -357,6 +357,59 @@ SELECT distinct (C.COUNTY_CITY_LOCATION), p.DEFINITION
         )
     FETCH FIRST 3 ROWS ONLY;
 
+SELECT distinct COUNTY_CITY_LOCATION,POPULATION_ID, avg(v.VICTIM_AGE) OVER (PARTITION BY COUNTY_CITY_LOCATION)
+FROM COLLISIONS C INNER JOIN PARTIES P on C.CASE_ID = P.COLLISION_CASE_ID inner join VICTIMS V on P.ID = V.PARTY_ID
+WHERE C.COUNTY_CITY_LOCATION in (
+         SELECT distinct COUNTY_CITY_LOCATION
+         from COLLISIONS C
+                  INNER JOIN POPULATION P ON P.ID = C.POPULATION_ID
+         where C.POPULATION_ID in
+               (
+                   SELECT distinct (C.POPULATION_ID)
+                   FROM COLLISIONS C --where c.POPULATION_ID is not null
+
+                   WHERE INSTR(LOWER(P.DEFINITION), 'over') > 0
+               )
+             FETCH FIRST 3 ROWS ONLY
+     );
+
+SELECT distinct COUNTY_CITY_LOCATION,POPULATION_ID, avg(v.VICTIM_AGE) OVER (PARTITION BY COUNTY_CITY_LOCATION, c.CASE_ID) as v_age
+FROM COLLISIONS C INNER JOIN PARTIES P on C.CASE_ID = P.COLLISION_CASE_ID inner join VICTIMS V on P.ID = V.PARTY_ID
+WHERE C.COUNTY_CITY_LOCATION in (
+         SELECT distinct COUNTY_CITY_LOCATION
+         from COLLISIONS C
+                  INNER JOIN POPULATION P ON P.ID = C.POPULATION_ID
+         where C.POPULATION_ID in
+               (
+                   SELECT distinct (C.POPULATION_ID)
+                   FROM COLLISIONS C --where c.POPULATION_ID is not null
+
+                   WHERE INSTR(LOWER(P.DEFINITION), 'over') > 0
+               )
+             FETCH FIRST 3 ROWS ONLY
+     )
+ORDER BY v_age FETCH FIRST 10 rows only;
+
+CREATE VIEW view_test(COUNTY_CITY_LOCATION, POPULATION_ID, V_AGE)  as (
+    SELECT distinct COUNTY_CITY_LOCATION,POPULATION_ID, avg(v.VICTIM_AGE) OVER (PARTITION BY COUNTY_CITY_LOCATION, c.CASE_ID) as v_age
+    FROM COLLISIONS C INNER JOIN PARTIES P on C.CASE_ID = P.COLLISION_CASE_ID inner join VICTIMS V on P.ID = V.PARTY_ID
+    WHERE C.COUNTY_CITY_LOCATION in (
+             SELECT distinct COUNTY_CITY_LOCATION
+             from COLLISIONS C
+                      INNER JOIN POPULATION P ON P.ID = C.POPULATION_ID
+             where C.POPULATION_ID in
+                   (
+                       SELECT distinct (C.POPULATION_ID)
+                       FROM COLLISIONS C --where c.POPULATION_ID is not null
+
+                       WHERE INSTR(LOWER(P.DEFINITION), 'over') > 0
+                   )
+                 FETCH FIRST 3 ROWS ONLY
+         )
+    ORDER BY v_age FETCH FIRST 10 rows only
+                                                                      );
+
+SELECT * from view_test;
 --QUERY 7
 --Find all collisions that satisfy the following:
 -- the collision was of type pedestrian and all victims were above 100 years
