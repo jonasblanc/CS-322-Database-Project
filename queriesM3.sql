@@ -313,16 +313,17 @@ where Row_Number <= 10
 order by COUNTY_CITY_LOCATION, V_AGE asc;
 
 
-
 --QUERY 7
-SELECT C.CASE_ID, MAX(V.VICTIM_AGE)
-    FROM VICTIMS V, PARTIES P, COLLISIONS C, TYPE_OF_COLLISION TOC
-    WHERE  V.PARTY_ID = P.ID
-      AND P.COLLISION_CASE_ID = C.CASE_ID
-      AND C.TYPE_OF_COLLISION_ID = TOC.ID
-      AND TOC.DEFINITION = 'Vehicle/Pedestrian'
+--Find all collisions that satisfy the following: the collision was of type pedestrian and all victims were above 100 years old.
+-- For each of the qualifying collisions, show the collision id and the age of the eldest collision victim.
+SELECT C.CASE_ID, MAX(V.VICTIM_AGE) AS AGE_MAX
+FROM VICTIMS V, PARTIES P, COLLISIONS C, TYPE_OF_COLLISION TOC
+WHERE V.PARTY_ID = P.ID
+  AND P.COLLISION_CASE_ID = C.CASE_ID
+  AND C.TYPE_OF_COLLISION_ID = TOC.ID
+  AND TOC.DEFINITION = 'Vehicle/Pedestrian'
 GROUP BY CASE_ID
-HAVING MIN(V.VICTIM_AGE) > 100
+HAVING MIN(V.VICTIM_AGE) > 100;
 
 --Query 8
 -- Find the vehicles that have participated in at least 10 collisions.
