@@ -312,7 +312,7 @@ order by COUNTY_CITY_LOCATION, V_AGE asc;
 --QUERY 7
 --Find all collisions that satisfy the following: the collision was of type pedestrian and all victims were above 100 years old.
 -- For each of the qualifying collisions, show the collision id and the age of the eldest collision victim.
-SELECT C.CASE_ID, MAX(V.VICTIM_AGE)
+SELECT C.CASE_ID, MAX(V.VICTIM_AGE) AS AGE_MAX
 FROM VICTIMS V, PARTIES P, COLLISIONS C, TYPE_OF_COLLISION TOC
 WHERE V.PARTY_ID = P.ID
   AND P.COLLISION_CASE_ID = C.CASE_ID
