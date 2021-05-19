@@ -5,8 +5,8 @@
 -- QUERY 5: Done
 -- QUERY 6: Work in progress: Z
 -- QUERY 7: Done CJ => 10x slower when checking for definition why ?
--- QUERY 8: Done
--- QUERY 9: Done
+-- QUERY 8: Done CJ
+-- QUERY 9: Done CJ
 -- QUERY 10: Done (Long, could be improved)
 
 
@@ -325,32 +325,24 @@ HAVING MIN(V.VICTIM_AGE) > 100;
 -- Find the vehicles that have participated in at least 10 collisions.
 -- Show the vehicle id and number of collisions the vehicle has participated in,
 -- sorted according to number of collisions (descending order).
-SELECT SVT.DEFINITION,
-       COLLISIONS_PER_VEHICLE.MAKE,
-       COLLISIONS_PER_VEHICLE.YEAR,
-       COLLISIONS_PER_VEHICLE.NUMBER_COLLISION
-FROM (SELECT P.STATEWIDE_VEHICLE_TYPE_ID AS TYPE,
-             P.VEHICLE_MAKE              AS MAKE,
-             P.VEHICLE_YEAR              AS YEAR,
-             COUNT(*)                    AS NUMBER_COLLISION
-      FROM PARTIES P
-      WHERE P.STATEWIDE_VEHICLE_TYPE_ID IS NOT NULL
-        AND P.VEHICLE_MAKE IS NOT NULL
-        AND P.VEHICLE_YEAR IS NOT NULL
-      GROUP BY (P.STATEWIDE_VEHICLE_TYPE_ID, P.VEHICLE_MAKE, P.VEHICLE_YEAR)
-      ORDER BY COUNT(*) DESC
-     ) COLLISIONS_PER_VEHICLE,
-     STATEWIDE_VEHICLE_TYPE SVT
-WHERE COLLISIONS_PER_VEHICLE.TYPE = SVT.ID;
+SELECT SVT.DEFINITION, P.VEHICLE_MAKE, P.VEHICLE_YEAR, COUNT(*) AS NUMBER_COLLISION
+FROM PARTIES P, STATEWIDE_VEHICLE_TYPE SVT
+WHERE P.STATEWIDE_VEHICLE_TYPE_ID IS NOT NULL
+    AND P.VEHICLE_MAKE IS NOT NULL
+    AND P.VEHICLE_YEAR IS NOT NULL
+    AND P.STATEWIDE_VEHICLE_TYPE_ID = SVT.ID
+GROUP BY (SVT.DEFINITION, P.VEHICLE_MAKE, P.VEHICLE_YEAR)
+HAVING COUNT(*) >= 10
+ORDER BY COUNT(*) DESC;
 
 --Query 9
 --Find the top-10 (with respect to number of collisions) cities. For each of these cities, show the city
 --location and number of collisions.
 
-SELECT COUNTY_CITY_LOCATION, Count(*) as n_col
-From COLLISIONS C
+SELECT COUNTY_CITY_LOCATION, COUNT(*) AS NUM_COL
+FROM COLLISIONS C
 GROUP BY COUNTY_CITY_LOCATION
-ORDER BY n_col DESC FETCH NEXT 10 ROWS ONLY;
+ORDER BY NUM_COL DESC FETCH FIRST 10 ROWS ONLY;
 
 
 --Query 10
