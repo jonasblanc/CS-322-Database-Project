@@ -1,13 +1,13 @@
--- QUERY 1: Work in progress: L
+-- QUERY 1: Done (could be improved/shorter)
 -- QUERY 2: Done
 -- QUERY 3: Done
--- QUERY 4: Done
+-- QUERY 4: Done (uses a view, is it allowed?)
 -- QUERY 5: Done
 -- QUERY 6: Work in progress: Z
 -- QUERY 7: Done
 -- QUERY 8: Done
 -- QUERY 9: Done
--- QUERY 10: Work in progress: Z
+-- QUERY 10: Done (Long, could be improved)
 
 
 --Questions:
@@ -88,7 +88,7 @@ FROM STATEWIDE_VEHICLE_TYPE SWT,
 WHERE SWT.ID = STATS_COLLISIONS_HOLE.SVT_ID
 
 --QUERY 3
-SELECT P.VEHICLE_MAKE, COUNT(*) AS NUMBER_OF_VICTIMS_KILLER_OR_WITH_SEVERE_INJURIES
+SELECT P.VEHICLE_MAKE, COUNT(*) AS NUMBER_OF_VICTIMS_KILLED_OR_WITH_SEVERE_INJURIES
 from PARTIES P
 WHERE P.ID In
       (SELECT V.ID
