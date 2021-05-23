@@ -1,13 +1,13 @@
 -- QUERY 1: Done (could be improved/shorter)
 -- QUERY 2: Done CJ
 -- QUERY 3: Done CJ
--- QUERY 4: Done (uses a view, is it allowed?)
+-- QUERY 4: Done (uses a view, is it allowed?) => TODO Relire 2 groupes => 2x plus
 -- QUERY 5: Done ~CJ => SLOW
 -- QUERY 6: Work in progress: Z
 -- QUERY 7: Done CJ
 -- QUERY 8: Done CJ
 -- QUERY 9: Done CJ
--- QUERY 10: Done CJ => Possible to alias for case ?
+-- QUERY 10: Done CJ => Possible to alias for case ? => TODO Take lightening into account in case of time is null
 
 
 --Questions:
