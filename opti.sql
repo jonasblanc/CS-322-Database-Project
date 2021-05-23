@@ -9,6 +9,47 @@ Q8 => Improvement
 Q9 => No success
 Q10
 
+--Index creation per table:
+CREATE INDEX PARTIES_IDX_PARTY_AGE on PARTIES(PARTY_AGE);
+CREATE INDEX PARTIES_IDX_AT_FAULT_PARTY_AGE on PARTIES(AT_FAULT, PARTY_AGE);
+CREATE INDEX PARTIES_IDX_COLLISION_CASE_ID_STATEWIDE_VEHICLE_TYPE_ID on PARTIES(COLLISION_CASE_ID, STATEWIDE_VEHICLE_TYPE_ID);
+CREATE INDEX PARTIES_IDX_ID_VEHICLE_MAKE on PARTIES(ID, VEHICLE_MAKE);
+CREATE INDEX PARTIES_IDX_COLLISION_CASE_ID_ID on PARTIES(COLLISION_CASE_ID, ID);
+CREATE INDEX PARTIES_IDX_STATEWIDE_VEHICLE_TYPE_ID_VEHICLE_MAKE_VEHICLE_YEAR on PARTIES(STATEWIDE_VEHICLE_TYPE_ID, VEHICLE_MAKE, VEHICLE_YEAR);
+
+CREATE INDEX VICTIMS_IDX_PARTY_ID_VICTIM_DEGREE_OF_INJURY_ID on VICTIMS(PARTY_ID, VICTIM_DEGREE_OF_INJURY_ID);
+CREATE INDEX VICTIM_DEGREE_OF_INJURY_IDX_DEFINITION_ID on VICTIM_DEGREE_OF_INJURY(DEFINITION, ID);
+CREATE INDEX VICTIMS_IDX_PARTY_ID_VICTIM_AGE on VICTIMS(PARTY_ID, VICTIM_AGE);
+
+CREATE INDEX COLLISIONS_IDX_CASE_ID_COUNTY_CITY_LOCATION on COLLISIONS(CASE_ID, COUNTY_CITY_LOCATION);
+CREATE INDEX COLLISIONS_IDX_CASE_ID_TYPE_OF_COLLISION_ID on COLLISIONS(CASE_ID, TYPE_OF_COLLISION_ID);
+
+CREATE INDEX ROAD_CONDITION_IDX_DEFINITION_ID on ROAD_CONDITION(DEFINITION, ID);
+
+CREATE INDEX TYPE_OF_COLLISION_IDX_DEFINITION_ID on TYPE_OF_COLLISION(DEFINITION, ID);
+
+CREATE INDEX STATEWIDE_VEHICLE_TYPE_IDX_DEFINITION_ID on STATEWIDE_VEHICLE_TYPE(DEFINITION, ID);
+
+DROP INDEX PARTIES_IDX_PARTY_AGE;
+DROP INDEX PARTIES_IDX_AT_FAULT_PARTY_AGE;
+DROP INDEX PARTIES_IDX_COLLISION_CASE_ID_STATEWIDE_VEHICLE_TYPE_ID;
+DROP INDEX PARTIES_IDX_ID_VEHICLE_MAKE;
+DROP INDEX PARTIES_IDX_COLLISION_CASE_ID_ID;
+DROP INDEX PARTIES_IDX_STATEWIDE_VEHICLE_TYPE_ID_VEHICLE_MAKE_VEHICLE_YEAR;
+
+DROP INDEX VICTIMS_IDX_PARTY_ID_VICTIM_DEGREE_OF_INJURY_ID;
+DROP INDEX VICTIM_DEGREE_OF_INJURY_IDX_DEFINITION_ID;
+DROP INDEX VICTIMS_IDX_PARTY_ID_VICTIM_AGE;
+
+DROP INDEX COLLISIONS_IDX_CASE_ID_COUNTY_CITY_LOCATION;
+DROP INDEX COLLISIONS_IDX_CASE_ID_TYPE_OF_COLLISION_ID;
+
+DROP INDEX ROAD_CONDITION_IDX_DEFINITION_ID;
+
+DROP INDEX TYPE_OF_COLLISION_IDX_DEFINITION_ID;
+
+DROP INDEX STATEWIDE_VEHICLE_TYPE_IDX_DEFINITION_ID;
+
 Q1: => Improvement
 
 ---------------------------------------------------------------------------------
@@ -25,22 +66,23 @@ Q1: => Improvement
 |*  8 |      TABLE ACCESS FULL| PARTIES |  6188K|    17M| 29868   (1)| 00:00:02 |
 ---------------------------------------------------------------------------------
 
-CREATE INDEX IDX on PARTIES(PARTY_AGE, AT_FAULT);
-CREATE INDEX IDX2 on PARTIES(PARTY_AGE);
+CREATE INDEX PARTIES_IDX_PARTY_AGE on PARTIES(PARTY_AGE);
+CREATE INDEX PARTIES_IDX_AT_FAULT_PARTY_AGE on PARTIES(AT_FAULT, PARTY_AGE);
 
----------------------------------------------------------------------------------
-| Id  | Operation                | Name | Rows  | Bytes | Cost (%CPU)| Time     |
----------------------------------------------------------------------------------
-|   0 | SELECT STATEMENT         |      |   112 |  4256 |  7926   (5)| 00:00:01 |
-|   1 |  SORT ORDER BY           |      |   112 |  4256 |  7926   (5)| 00:00:01 |
-|*  2 |   HASH JOIN              |      |   112 |  4256 |  7925   (5)| 00:00:01 |
-|   3 |    VIEW                  |      |   106 |  2014 |  4463   (4)| 00:00:01 |
-|   4 |     HASH GROUP BY        |      |   106 |   530 |  4463   (4)| 00:00:01 |
-|*  5 |      INDEX FAST FULL SCAN| IDX  |  2808K|    13M|  4393   (2)| 00:00:01 |
-|   6 |    VIEW                  |      |   106 |  2014 |  3461   (6)| 00:00:01 |
-|   7 |     HASH GROUP BY        |      |   106 |   318 |  3461   (6)| 00:00:01 |
-|*  8 |      INDEX FAST FULL SCAN| IDX2 |  6188K|    17M|  3299   (1)| 00:00:01 |
----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
+| Id  | Operation                | Name                           | Rows  | Bytes | Cost (%CPU)| Time     |
+-----------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT         |                                |   112 |  4256 |  7926   (5)| 00:00:01 |
+|   1 |  SORT ORDER BY           |                                |   112 |  4256 |  7926   (5)| 00:00:01 |
+|*  2 |   HASH JOIN              |                                |   112 |  4256 |  7925   (5)| 00:00:01 |
+|   3 |    VIEW                  |                                |   106 |  2014 |  4463   (4)| 00:00:01 |
+|   4 |     HASH GROUP BY        |                                |   106 |   530 |  4463   (4)| 00:00:01 |
+|*  5 |      INDEX FAST FULL SCAN| PARTIES_IDX_AT_FAULT_PARTY_AGE |  2808K|    13M|  4393   (2)| 00:00:01 |
+|   6 |    VIEW                  |                                |   106 |  2014 |  3461   (6)| 00:00:01 |
+|   7 |     HASH GROUP BY        |                                |   106 |   318 |  3461   (6)| 00:00:01 |
+|*  8 |      INDEX FAST FULL SCAN| PARTIES_IDX_PARTY_AGE          |  6188K|    17M|  3299   (1)| 00:00:01 |
+-----------------------------------------------------------------------------------------------------------
+
 
 
 Q2: => Improvement
@@ -66,27 +108,26 @@ Q2: => Improvement
 
 -- Already index on (CWRC.CASE_ID, CWRC.ROAD_CONDITION_ID)
 --Index on: STATEWIDE_VEHICLE_TYPE_ID => no amelioration 
-CREATE INDEX IDX on PARTIES(COLLISION_CASE_ID, STATEWIDE_VEHICLE_TYPE_ID);
-CREATE INDEX IDX2 on ROAD_CONDITION(ID, DEFINITION);
+CREATE INDEX PARTIES_IDX_COLLISION_CASE_ID_STATEWIDE_VEHICLE_TYPE_ID on PARTIES(COLLISION_CASE_ID, STATEWIDE_VEHICLE_TYPE_ID);
+CREATE INDEX ROAD_CONDITION_IDX_DEFINITION_ID on ROAD_CONDITION(DEFINITION, ID);
+CREATE INDEX STATEWIDE_VEHICLE_TYPE_IDX_DEFINITION_ID on STATEWIDE_VEHICLE_TYPE(DEFINITION, ID);
 
------------------------------------------------------------------------------------------------------------------------
-| Id  | Operation                     | Name                          | Rows  | Bytes |TempSpc| Cost (%CPU)| Time     |
------------------------------------------------------------------------------------------------------------------------
-|   0 | SELECT STATEMENT              |                               |     4 |   252 |       | 57578   (1)| 00:00:03 |
-|   1 |  SORT ORDER BY                |                               |     4 |   252 |       | 57578   (1)| 00:00:03 |
-|   2 |   MERGE JOIN                  |                               |     4 |   252 |       | 57577   (1)| 00:00:03 |
-|   3 |    TABLE ACCESS BY INDEX ROWID| STATEWIDE_VEHICLE_TYPE        |    15 |   330 |       |     2   (0)| 00:00:01 |
-|   4 |     INDEX FULL SCAN           | SYS_C00207107                 |    15 |       |       |     1   (0)| 00:00:01 |
-|*  5 |    SORT JOIN                  |                               |     5 |   205 |       | 57575   (1)| 00:00:03 |
-|*  6 |     VIEW                      |                               |     5 |   205 |       | 57574   (1)| 00:00:03 |
-|*  7 |      WINDOW SORT PUSHED RANK  |                               |    15 |  2325 |       | 57574   (1)| 00:00:03 |
-|   8 |       HASH GROUP BY           |                               |    15 |  2325 |       | 57574   (1)| 00:00:03 |
-|*  9 |        HASH JOIN              |                               |   806K|   119M|    43M| 57535   (1)| 00:00:03 |
-|* 10 |         HASH JOIN             |                               |   456K|    38M|       |  9952   (1)| 00:00:01 |
-|* 11 |          INDEX SKIP SCAN      | IDX2                          |     1 |    21 |       |     1   (0)| 00:00:01 |
-|  12 |          TABLE ACCESS FULL    | COLLISION_WITH_ROAD_CONDITION |  3652K|   233M|       |  9942   (1)| 00:00:01 |
-|* 13 |         INDEX FAST FULL SCAN  | IDX                           |  6400K|   408M|       | 21492   (1)| 00:00:01 |
------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                  | Name                                                    | Rows  | Bytes |TempSpc| Cost (%CPU)| Time     |
+----------------------------------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT           |                                                         |     4 |   252 |       | 57576   (1)| 00:00:03 |
+|   1 |  SORT ORDER BY             |                                                         |     4 |   252 |       | 57576   (1)| 00:00:03 |
+|*  2 |   HASH JOIN                |                                                         |     4 |   252 |       | 57575   (1)| 00:00:03 |
+|*  3 |    VIEW                    |                                                         |     5 |   205 |       | 57574   (1)| 00:00:03 |
+|*  4 |     WINDOW SORT PUSHED RANK|                                                         |    15 |  2325 |       | 57574   (1)| 00:00:03 |
+|   5 |      HASH GROUP BY         |                                                         |    15 |  2325 |       | 57574   (1)| 00:00:03 |
+|*  6 |       HASH JOIN            |                                                         |   806K|   119M|    43M| 57535   (1)| 00:00:03 |
+|*  7 |        HASH JOIN           |                                                         |   456K|    38M|       |  9952   (1)| 00:00:01 |
+|*  8 |         INDEX RANGE SCAN   | ROAD_CONDITION_IDX_DEFINITION_ID                        |     1 |    21 |       |     1   (0)| 00:00:01 |
+|   9 |         TABLE ACCESS FULL  | COLLISION_WITH_ROAD_CONDITION                           |  3652K|   233M|       |  9942   (1)| 00:00:01 |
+|* 10 |        INDEX FAST FULL SCAN| PARTIES_IDX_COLLISION_CASE_ID_STATEWIDE_VEHICLE_TYPE_ID |  6400K|   408M|       | 21492   (1)| 00:00:01 |
+|  11 |    INDEX FULL SCAN         | STATEWIDE_VEHICLE_TYPE_IDX_DEFINITION_ID                |    15 |   330 |       |     1   (0)| 00:00:01 |
+----------------------------------------------------------------------------------------------------------------------------------------------
 
 Q3: => Improvement
 
@@ -105,24 +146,26 @@ Q3: => Improvement
 |*  9 |       TABLE ACCESS FULL   | PARTIES                 |  6759K|    83M|       | 29909   (1)| 00:00:02 |
 -------------------------------------------------------------------------------------------------------------
 
-CREATE INDEX IDX on PARTIES(ID, VEHICLE_MAKE);
-CREATE INDEX IDX2 on VICTIMS(VICTIM_DEGREE_OF_INJURY_ID, PARTY_ID);
-CREATE INDEX IDX3 on VICTIM_DEGREE_OF_INJURY(ID, DEFINITION);
+CREATE INDEX PARTIES_IDX_ID_VEHICLE_MAKE on PARTIES(ID, VEHICLE_MAKE);
+CREATE INDEX VICTIMS_IDX_PARTY_ID_VICTIM_DEGREE_OF_INJURY_ID on VICTIMS(PARTY_ID, VICTIM_DEGREE_OF_INJURY_ID);
+CREATE INDEX VICTIM_DEGREE_OF_INJURY_IDX_DEFINITION_ID on VICTIM_DEGREE_OF_INJURY(DEFINITION, ID);
 
--------------------------------------------------------------------------------------------
-| Id  | Operation                  | Name | Rows  | Bytes |TempSpc| Cost (%CPU)| Time     |
--------------------------------------------------------------------------------------------
-|   0 | SELECT STATEMENT           |      |    10 |  1160 |       | 20346   (1)| 00:00:01 |
-|   1 |  SORT ORDER BY             |      |    10 |  1160 |       | 20346   (1)| 00:00:01 |
-|*  2 |   VIEW                     |      |    10 |  1160 |       | 20345   (1)| 00:00:01 |
-|*  3 |    WINDOW SORT PUSHED RANK |      |   209 |  8778 |       | 20345   (1)| 00:00:01 |
-|   4 |     HASH GROUP BY          |      |   209 |  8778 |       | 20345   (1)| 00:00:01 |
-|*  5 |      HASH JOIN             |      |  1360K|    54M|    53M| 20279   (1)| 00:00:01 |
-|*  6 |       HASH JOIN            |      |  1360K|    37M|       |  3021   (2)| 00:00:01 |
-|*  7 |        INDEX FULL SCAN     | IDX3 |     2 |    40 |       |     1   (0)| 00:00:01 |
-|*  8 |        INDEX FAST FULL SCAN| IDX2 |  4082K|    35M|       |  3010   (1)| 00:00:01 |
-|*  9 |       INDEX FAST FULL SCAN | IDX  |  6759K|    83M|       |  6592   (1)| 00:00:01 |
--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                  | Name                                            | Rows  | Bytes |TempSpc| Cost (%CPU)| Time     |
+--------------------------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT           |                                                 |    10 |  1160 |       | 20348   (1)| 00:00:01 |
+|   1 |  SORT ORDER BY             |                                                 |    10 |  1160 |       | 20348   (1)| 00:00:01 |
+|*  2 |   VIEW                     |                                                 |    10 |  1160 |       | 20347   (1)| 00:00:01 |
+|*  3 |    WINDOW SORT PUSHED RANK |                                                 |   209 |  8778 |       | 20347   (1)| 00:00:01 |
+|   4 |     HASH GROUP BY          |                                                 |   209 |  8778 |       | 20347   (1)| 00:00:01 |
+|*  5 |      HASH JOIN             |                                                 |  1360K|    54M|    53M| 20281   (1)| 00:00:01 |
+|*  6 |       HASH JOIN            |                                                 |  1360K|    37M|       |  3023   (2)| 00:00:01 |
+|   7 |        INLIST ITERATOR     |                                                 |       |       |       |            |          |
+|*  8 |         INDEX RANGE SCAN   | VICTIM_DEGREE_OF_INJURY_IDX_DEFINITION_ID       |     2 |    40 |       |     1   (0)| 00:00:01 |
+|*  9 |        INDEX FAST FULL SCAN| VICTIMS_IDX_PARTY_ID_VICTIM_DEGREE_OF_INJURY_ID |  4082K|    35M|       |  3012   (1)| 00:00:01 |
+|* 10 |       INDEX FAST FULL SCAN | PARTIES_IDX_ID_VEHICLE_MAKE                     |  6759K|    83M|       |  6592   (1)| 00:00:01 |
+--------------------------------------------------------------------------------------------------------------------------------------
+
 
 Q5: => Improvement
 
@@ -146,28 +189,29 @@ Q5: => Improvement
 |  14 |        TABLE ACCESS FULL  | COLLISIONS |  3678K|    14M|       | 19088   (1)| 00:00:01 |
 ------------------------------------------------------------------------------------------------
 
-CREATE INDEX IDX on PARTIES(COLLISION_CASE_ID, STATEWIDE_VEHICLE_TYPE_ID);
-CREATE INDEX IDX2 on COLLISIONS(CASE_ID, COUNTY_CITY_LOCATION);
+CREATE INDEX PARTIES_IDX_COLLISION_CASE_ID_STATEWIDE_VEHICLE_TYPE_ID on PARTIES(COLLISION_CASE_ID, STATEWIDE_VEHICLE_TYPE_ID);
+CREATE INDEX COLLISIONS_IDX_CASE_ID_COUNTY_CITY_LOCATION on COLLISIONS(CASE_ID, COUNTY_CITY_LOCATION);
 
---------------------------------------------------------------------------------------------------
-| Id  | Operation                    | Name      | Rows  | Bytes |TempSpc| Cost (%CPU)| Time     |
---------------------------------------------------------------------------------------------------
-|   0 | SELECT STATEMENT             |           |     1 |       |       | 70847   (1)| 00:00:03 |
-|   1 |  SORT AGGREGATE              |           |     1 |       |       |            |          |
-|   2 |   VIEW                       |           |     1 |       |       | 70847   (1)| 00:00:03 |
-|*  3 |    FILTER                    |           |       |       |       |            |          |
-|   4 |     HASH GROUP BY            |           |     1 |     2 |       | 70847   (1)| 00:00:03 |
-|   5 |      VIEW                    |           |   287 |   574 |       | 70847   (1)| 00:00:03 |
-|*  6 |       FILTER                 |           |       |       |       |            |          |
-|   7 |        HASH GROUP BY         |           |   287 | 39032 |       | 70847   (1)| 00:00:03 |
-|*  8 |         HASH JOIN            |           |  6400K|   830M|   284M| 70679   (1)| 00:00:03 |
-|*  9 |          INDEX FAST FULL SCAN| IDX2      |  3678K|   242M|       | 11160   (1)| 00:00:01 |
-|* 10 |          INDEX FAST FULL SCAN| IDX       |  6400K|   408M|       | 21492   (1)| 00:00:01 |
-|  11 |     SORT AGGREGATE           |           |     1 |    13 |       |            |          |
-|  12 |      VIEW                    | VM_NWVW_1 |   540 |  7020 |       | 11251   (1)| 00:00:01 |
-|  13 |       SORT GROUP BY          |           |   540 |  2160 |       | 11251   (1)| 00:00:01 |
-|  14 |        INDEX FAST FULL SCAN  | IDX2      |  3678K|    14M|       | 11158   (1)| 00:00:01 |
---------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                    | Name                                                    | Rows  | Bytes |TempSpc| Cost (%CPU)| Time     |
+------------------------------------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT             |                                                         |     1 |       |       | 70847   (1)| 00:00:03 |
+|   1 |  SORT AGGREGATE              |                                                         |     1 |       |       |            |          |
+|   2 |   VIEW                       |                                                         |     1 |       |       | 70847   (1)| 00:00:03 |
+|*  3 |    FILTER                    |                                                         |       |       |       |            |          |
+|   4 |     HASH GROUP BY            |                                                         |     1 |     2 |       | 70847   (1)| 00:00:03 |
+|   5 |      VIEW                    |                                                         |   287 |   574 |       | 70847   (1)| 00:00:03 |
+|*  6 |       FILTER                 |                                                         |       |       |       |            |          |
+|   7 |        HASH GROUP BY         |                                                         |   287 | 39032 |       | 70847   (1)| 00:00:03 |
+|*  8 |         HASH JOIN            |                                                         |  6400K|   830M|   284M| 70679   (1)| 00:00:03 |
+|*  9 |          INDEX FAST FULL SCAN| COLLISIONS_IDX_CASE_ID_COUNTY_CITY_LOCATION             |  3678K|   242M|       | 11160   (1)| 00:00:01 |
+|* 10 |          INDEX FAST FULL SCAN| PARTIES_IDX_COLLISION_CASE_ID_STATEWIDE_VEHICLE_TYPE_ID |  6400K|   408M|       | 21492   (1)| 00:00:01 |
+|  11 |     SORT AGGREGATE           |                                                         |     1 |    13 |       |            |          |
+|  12 |      VIEW                    | VM_NWVW_1                                               |   540 |  7020 |       | 11251   (1)| 00:00:01 |
+|  13 |       SORT GROUP BY          |                                                         |   540 |  2160 |       | 11251   (1)| 00:00:01 |
+|  14 |        INDEX FAST FULL SCAN  | COLLISIONS_IDX_CASE_ID_COUNTY_CITY_LOCATION             |  3678K|    14M|       | 11158   (1)| 00:00:01 |
+------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 Q6:
 --=> Wait to have a final version
@@ -189,25 +233,26 @@ Q7: => Improvement
 |   9 |      TABLE ACCESS FULL | PARTIES           |  7286K|   493M|       | 29872   (1)| 00:00:02 |
 ----------------------------------------------------------------------------------------------------
 
-CREATE INDEX IDX on VICTIMS(PARTY_ID, VICTIM_AGE);
-CREATE INDEX IDX2 on PARTIES(COLLISION_CASE_ID, ID);
-CREATE INDEX IDX3 on COLLISIONS(CASE_ID, TYPE_OF_COLLISION_ID);
-CREATE INDEX IDX4 on TYPE_OF_COLLISION(ID, DEFINITION);
+CREATE INDEX VICTIMS_IDX_PARTY_ID_VICTIM_AGE on VICTIMS(PARTY_ID, VICTIM_AGE);
+CREATE INDEX PARTIES_IDX_COLLISION_CASE_ID_ID on PARTIES(COLLISION_CASE_ID, ID);
+CREATE INDEX COLLISIONS_IDX_CASE_ID_TYPE_OF_COLLISION_ID on COLLISIONS(CASE_ID, TYPE_OF_COLLISION_ID);
+CREATE INDEX TYPE_OF_COLLISION_IDX_DEFINITION_ID on TYPE_OF_COLLISION(DEFINITION, ID);
 
-------------------------------------------------------------------------------------------
-| Id  | Operation                 | Name | Rows  | Bytes |TempSpc| Cost (%CPU)| Time     |
-------------------------------------------------------------------------------------------
-|   0 | SELECT STATEMENT          |      | 25334 |  3958K|       | 85108   (1)| 00:00:04 |
-|*  1 |  FILTER                   |      |       |       |       |            |          |
-|   2 |   HASH GROUP BY           |      | 25334 |  3958K|    82M| 85108   (1)| 00:00:04 |
-|*  3 |    HASH JOIN              |      |   506K|    77M|    81M| 78263   (1)| 00:00:04 |
-|   4 |     INDEX FAST FULL SCAN  | IDX  |  4082K|    35M|       |  3066   (1)| 00:00:01 |
-|*  5 |     HASH JOIN             |      |   904K|   130M|    40M| 64157   (1)| 00:00:03 |
-|*  6 |      HASH JOIN            |      |   456K|    34M|       | 10858   (1)| 00:00:01 |
-|*  7 |       INDEX SKIP SCAN     | IDX4 |     1 |    13 |       |     1   (0)| 00:00:01 |
-|   8 |       INDEX FAST FULL SCAN| IDX3 |  3678K|   235M|       | 10848   (1)| 00:00:01 |
-|   9 |      INDEX FAST FULL SCAN | IDX2 |  7286K|   493M|       | 22688   (1)| 00:00:01 |
-------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                 | Name                                        | Rows  | Bytes |TempSpc| Cost (%CPU)| Time     |
+---------------------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT          |                                             | 25334 |  3958K|       | 85108   (1)| 00:00:04 |
+|*  1 |  FILTER                   |                                             |       |       |       |            |          |
+|   2 |   HASH GROUP BY           |                                             | 25334 |  3958K|    82M| 85108   (1)| 00:00:04 |
+|*  3 |    HASH JOIN              |                                             |   506K|    77M|    81M| 78263   (1)| 00:00:04 |
+|   4 |     INDEX FAST FULL SCAN  | VICTIMS_IDX_PARTY_ID_VICTIM_AGE             |  4082K|    35M|       |  3066   (1)| 00:00:01 |
+|*  5 |     HASH JOIN             |                                             |   904K|   130M|    40M| 64157   (1)| 00:00:03 |
+|*  6 |      HASH JOIN            |                                             |   456K|    34M|       | 10858   (1)| 00:00:01 |
+|*  7 |       INDEX RANGE SCAN    | TYPE_OF_COLLISION_IDX_DEFINITION_ID         |     1 |    13 |       |     1   (0)| 00:00:01 |
+|   8 |       INDEX FAST FULL SCAN| COLLISIONS_IDX_CASE_ID_TYPE_OF_COLLISION_ID |  3678K|   235M|       | 10848   (1)| 00:00:01 |
+|   9 |      INDEX FAST FULL SCAN | PARTIES_IDX_COLLISION_CASE_ID_ID            |  7286K|   493M|       | 22688   (1)| 00:00:01 |
+---------------------------------------------------------------------------------------------------------------------------------
+
 
 Q8: => Improvement
 
@@ -223,19 +268,45 @@ Q8: => Improvement
 |*  6 |      TABLE ACCESS FULL| PARTIES                |  5415K|    67M| 29919   (1)| 00:00:02 |
 ------------------------------------------------------------------------------------------------
 
-CREATE INDEX IDX on STATEWIDE_VEHICLE_TYPE(ID, DEFINITION);
-CREATE INDEX IDX2 on PARTIES(STATEWIDE_VEHICLE_TYPE_ID, VEHICLE_MAKE, VEHICLE_YEAR);
+CREATE INDEX STATEWIDE_VEHICLE_TYPE_IDX_DEFINITION_ID on STATEWIDE_VEHICLE_TYPE(DEFINITION, ID);
+CREATE INDEX PARTIES_IDX_STATEWIDE_VEHICLE_TYPE_ID_VEHICLE_MAKE_VEHICLE_YEAR on PARTIES(STATEWIDE_VEHICLE_TYPE_ID, VEHICLE_MAKE, VEHICLE_YEAR);
 
----------------------------------------------------------------------------------
-| Id  | Operation                | Name | Rows  | Bytes | Cost (%CPU)| Time     |
----------------------------------------------------------------------------------
-|   0 | SELECT STATEMENT         |      | 12466 |   426K|  6730   (5)| 00:00:01 |
-|   1 |  SORT ORDER BY           |      | 12466 |   426K|  6730   (5)| 00:00:01 |
-|*  2 |   FILTER                 |      |       |       |            |          |
-|   3 |    HASH GROUP BY         |      | 12466 |   426K|  6730   (5)| 00:00:01 |
-|*  4 |     HASH JOIN            |      |  5415K|   180M|  6449   (1)| 00:00:01 |
-|   5 |      INDEX FULL SCAN     | IDX  |    15 |   330 |     1   (0)| 00:00:01 |
-|*  6 |      INDEX FAST FULL SCAN| IDX2 |  5415K|    67M|  6434   (1)| 00:00:01 |
----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                | Name                                                            | Rows  | Bytes | Cost (%CPU)| Time     |
+--------------------------------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT         |                                                                 | 12466 |   426K|  6730   (5)| 00:00:01 |
+|   1 |  SORT ORDER BY           |                                                                 | 12466 |   426K|  6730   (5)| 00:00:01 |
+|*  2 |   FILTER                 |                                                                 |       |       |            |          |
+|   3 |    HASH GROUP BY         |                                                                 | 12466 |   426K|  6730   (5)| 00:00:01 |
+|*  4 |     HASH JOIN            |                                                                 |  5415K|   180M|  6449   (1)| 00:00:01 |
+|   5 |      INDEX FULL SCAN     | STATEWIDE_VEHICLE_TYPE_IDX_DEFINITION_ID                        |    15 |   330 |     1   (0)| 00:00:01 |
+|*  6 |      INDEX FAST FULL SCAN| PARTIES_IDX_STATEWIDE_VEHICLE_TYPE_ID_VEHICLE_MAKE_VEHICLE_YEAR |  5415K|    67M|  6434   (1)| 00:00:01 |
+--------------------------------------------------------------------------------------------------------------------------------------------
+
 
 Q9: => No success
+
+
+--Q1
+DROP INDEX PARTIES_IDX_PARTY_AGE;
+DROP INDEX PARTIES_IDX_AT_FAULT_PARTY_AGE;
+--Q2
+DROP INDEX PARTIES_IDX_COLLISION_CASE_ID_STATEWIDE_VEHICLE_TYPE_ID;
+DROP INDEX ROAD_CONDITION_IDX_DEFINITION_ID;
+DROP INDEX STATEWIDE_VEHICLE_TYPE_IDX_DEFINITION_ID;
+
+--Q3
+DROP INDEX PARTIES_IDX_ID_VEHICLE_MAKE;
+DROP INDEX VICTIMS_IDX_PARTY_ID_VICTIM_DEGREE_OF_INJURY_ID;
+DROP INDEX VICTIM_DEGREE_OF_INJURY_IDX_DEFINITION_ID;
+--Q5
+--DROP INDEX PARTIES_IDX_COLLISION_CASE_ID_STATEWIDE_VEHICLE_TYPE_ID; --Already in Q2
+DROP INDEX COLLISIONS_IDX_CASE_ID_COUNTY_CITY_LOCATION;
+--Q7
+DROP INDEX VICTIMS_IDX_PARTY_ID_VICTIM_AGE;
+DROP INDEX PARTIES_IDX_COLLISION_CASE_ID_ID;
+DROP INDEX COLLISIONS_IDX_CASE_ID_TYPE_OF_COLLISION_ID;
+DROP INDEX TYPE_OF_COLLISION_IDX_DEFINITION_ID;
+--Q8
+--DROP INDEX STATEWIDE_VEHICLE_TYPE_IDX_DEFINITION_ID;
+DROP INDEX PARTIES_IDX_STATEWIDE_VEHICLE_TYPE_ID_VEHICLE_MAKE_VEHICLE_YEAR;
