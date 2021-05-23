@@ -65,6 +65,13 @@ Q1: => Improvement
 |   7 |     HASH GROUP BY     |         |   106 |   318 | 30030   (1)| 00:00:02 |
 |*  8 |      TABLE ACCESS FULL| PARTIES |  6188K|    17M| 29868   (1)| 00:00:02 |
 ---------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+"   2 - access(""TOTAL"".""AGE_RANGE""=""FAULT"".""AGE_RANGE"")"
+"   5 - filter(""P"".""PARTY_AGE"" IS NOT NULL AND ""P"".""AT_FAULT""='T')"
+"   8 - filter(""P"".""PARTY_AGE"" IS NOT NULL)"
 
 CREATE INDEX PARTIES_IDX_PARTY_AGE on PARTIES(PARTY_AGE);
 CREATE INDEX PARTIES_IDX_AT_FAULT_PARTY_AGE on PARTIES(AT_FAULT, PARTY_AGE);
@@ -82,6 +89,13 @@ CREATE INDEX PARTIES_IDX_AT_FAULT_PARTY_AGE on PARTIES(AT_FAULT, PARTY_AGE);
 |   7 |     HASH GROUP BY        |                                |   106 |   318 |  3461   (6)| 00:00:01 |
 |*  8 |      INDEX FAST FULL SCAN| PARTIES_IDX_PARTY_AGE          |  6188K|    17M|  3299   (1)| 00:00:01 |
 -----------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+"   2 - access(""TOTAL"".""AGE_RANGE""=""FAULT"".""AGE_RANGE"")"
+"   5 - filter(""P"".""PARTY_AGE"" IS NOT NULL AND ""P"".""AT_FAULT""='T')"
+"   8 - filter(""P"".""PARTY_AGE"" IS NOT NULL)"
 
 
 
@@ -105,6 +119,20 @@ Q2: => Improvement
 |  12 |          TABLE ACCESS FULL    | COLLISION_WITH_ROAD_CONDITION |  3652K|   233M|       |  9942   (1)| 00:00:01 |
 |* 13 |         TABLE ACCESS FULL     | PARTIES                       |  6400K|   408M|       | 29906   (1)| 00:00:02 |
 -----------------------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+"   5 - access(""SWT"".""ID""=""from$_subquery$_006"".""SVT_ID"")"
+"       filter(""SWT"".""ID""=""from$_subquery$_006"".""SVT_ID"")"
+"   6 - filter(""from$_subquery$_006"".""rowlimit_$$_rownumber""<=5)"
+   7 - filter(ROW_NUMBER() OVER ( ORDER BY COUNT(*) DESC )<=5)
+"   9 - access(""P"".""COLLISION_CASE_ID""=""CWRC"".""CASE_ID"")"
+"  10 - access(""CWRC"".""ROAD_CONDITION_ID""=""RC"".""ID"")"
+"  11 - filter(""RC"".""DEFINITION""='Holes, Deep Ruts')"
+"  13 - filter(""P"".""STATEWIDE_VEHICLE_TYPE_ID"" IS NOT NULL)"
+
+
 
 -- Already index on (CWRC.CASE_ID, CWRC.ROAD_CONDITION_ID)
 --Index on: STATEWIDE_VEHICLE_TYPE_ID => no amelioration 
@@ -128,8 +156,20 @@ CREATE INDEX STATEWIDE_VEHICLE_TYPE_IDX_DEFINITION_ID on STATEWIDE_VEHICLE_TYPE(
 |* 10 |        INDEX FAST FULL SCAN| PARTIES_IDX_COLLISION_CASE_ID_STATEWIDE_VEHICLE_TYPE_ID |  6400K|   408M|       | 21492   (1)| 00:00:01 |
 |  11 |    INDEX FULL SCAN         | STATEWIDE_VEHICLE_TYPE_IDX_DEFINITION_ID                |    15 |   330 |       |     1   (0)| 00:00:01 |
 ----------------------------------------------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+"   2 - access(""SWT"".""ID""=""from$_subquery$_006"".""SVT_ID"")"
+"   3 - filter(""from$_subquery$_006"".""rowlimit_$$_rownumber""<=5)"
+   4 - filter(ROW_NUMBER() OVER ( ORDER BY COUNT(*) DESC )<=5)
+"   6 - access(""P"".""COLLISION_CASE_ID""=""CWRC"".""CASE_ID"")"
+"   7 - access(""CWRC"".""ROAD_CONDITION_ID""=""RC"".""ID"")"
+"   8 - access(""RC"".""DEFINITION""='Holes, Deep Ruts')"
+"  10 - filter(""P"".""STATEWIDE_VEHICLE_TYPE_ID"" IS NOT NULL)"
 
 Q3: => Improvement
+
 
 -------------------------------------------------------------------------------------------------------------
 | Id  | Operation                 | Name                    | Rows  | Bytes |TempSpc| Cost (%CPU)| Time     |
@@ -145,6 +185,17 @@ Q3: => Improvement
 |*  8 |        TABLE ACCESS FULL  | VICTIMS                 |  4082K|    35M|       |  5269   (1)| 00:00:01 |
 |*  9 |       TABLE ACCESS FULL   | PARTIES                 |  6759K|    83M|       | 29909   (1)| 00:00:02 |
 -------------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+"   2 - filter(""from$_subquery$_004"".""rowlimit_$$_rownumber""<=10)"
+   3 - filter(ROW_NUMBER() OVER ( ORDER BY COUNT(*) DESC )<=10)
+"   5 - access(""P"".""ID""=""V"".""PARTY_ID"")"
+"   6 - access(""V"".""VICTIM_DEGREE_OF_INJURY_ID""=""VDOI"".""ID"")"
+"   7 - filter(""VDOI"".""DEFINITION""='Killed' OR ""VDOI"".""DEFINITION""='Severe Injury')"
+"   8 - filter(""V"".""VICTIM_DEGREE_OF_INJURY_ID"">=0 AND ""V"".""VICTIM_DEGREE_OF_INJURY_ID""<=7)"
+"   9 - filter(""P"".""VEHICLE_MAKE"" IS NOT NULL)"
 
 CREATE INDEX PARTIES_IDX_ID_VEHICLE_MAKE on PARTIES(ID, VEHICLE_MAKE);
 CREATE INDEX VICTIMS_IDX_PARTY_ID_VICTIM_DEGREE_OF_INJURY_ID on VICTIMS(PARTY_ID, VICTIM_DEGREE_OF_INJURY_ID);
@@ -165,6 +216,17 @@ CREATE INDEX VICTIM_DEGREE_OF_INJURY_IDX_DEFINITION_ID on VICTIM_DEGREE_OF_INJUR
 |*  9 |        INDEX FAST FULL SCAN| VICTIMS_IDX_PARTY_ID_VICTIM_DEGREE_OF_INJURY_ID |  4082K|    35M|       |  3012   (1)| 00:00:01 |
 |* 10 |       INDEX FAST FULL SCAN | PARTIES_IDX_ID_VEHICLE_MAKE                     |  6759K|    83M|       |  6592   (1)| 00:00:01 |
 --------------------------------------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+"   2 - filter(""from$_subquery$_004"".""rowlimit_$$_rownumber""<=10)"
+   3 - filter(ROW_NUMBER() OVER ( ORDER BY COUNT(*) DESC )<=10)
+"   5 - access(""P"".""ID""=""V"".""PARTY_ID"")"
+"   6 - access(""V"".""VICTIM_DEGREE_OF_INJURY_ID""=""VDOI"".""ID"")"
+"   8 - access(""VDOI"".""DEFINITION""='Killed' OR ""VDOI"".""DEFINITION""='Severe Injury')"
+"   9 - filter(""V"".""VICTIM_DEGREE_OF_INJURY_ID"">=0 AND ""V"".""VICTIM_DEGREE_OF_INJURY_ID""<=7)"
+"  10 - filter(""P"".""VEHICLE_MAKE"" IS NOT NULL)"
 
 
 Q5: => Improvement
@@ -188,6 +250,18 @@ Q5: => Improvement
 |  13 |       SORT GROUP BY       |            |   540 |  2160 |       | 19182   (1)| 00:00:01 |
 |  14 |        TABLE ACCESS FULL  | COLLISIONS |  3678K|    14M|       | 19088   (1)| 00:00:01 |
 ------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+"   3 - filter(COUNT(*)>= (SELECT COUNT(""$vm_col_1"")/2 FROM  (SELECT "
+"              ""C"".""COUNTY_CITY_LOCATION"" ""$vm_col_1"" FROM ""COLLISIONS"" ""C"" GROUP BY "
+"              ""C"".""COUNTY_CITY_LOCATION"") ""VM_NWVW_1""))"
+   6 - filter(COUNT(*)>=10)
+"   8 - access(""P"".""COLLISION_CASE_ID""=""C"".""CASE_ID"")"
+"   9 - filter(""C"".""COUNTY_CITY_LOCATION"" IS NOT NULL)"
+"  10 - filter(""P"".""STATEWIDE_VEHICLE_TYPE_ID"" IS NOT NULL)"
+
 
 CREATE INDEX PARTIES_IDX_COLLISION_CASE_ID_STATEWIDE_VEHICLE_TYPE_ID on PARTIES(COLLISION_CASE_ID, STATEWIDE_VEHICLE_TYPE_ID);
 CREATE INDEX COLLISIONS_IDX_CASE_ID_COUNTY_CITY_LOCATION on COLLISIONS(CASE_ID, COUNTY_CITY_LOCATION);
@@ -211,6 +285,17 @@ CREATE INDEX COLLISIONS_IDX_CASE_ID_COUNTY_CITY_LOCATION on COLLISIONS(CASE_ID, 
 |  13 |       SORT GROUP BY          |                                                         |   540 |  2160 |       | 11251   (1)| 00:00:01 |
 |  14 |        INDEX FAST FULL SCAN  | COLLISIONS_IDX_CASE_ID_COUNTY_CITY_LOCATION             |  3678K|    14M|       | 11158   (1)| 00:00:01 |
 ------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+"   3 - filter(COUNT(*)>= (SELECT COUNT(""$vm_col_1"")/2 FROM  (SELECT ""C"".""COUNTY_CITY_LOCATION"" ""$vm_col_1"" FROM ""COLLISIONS"" ""C"" GROUP "
+"              BY ""C"".""COUNTY_CITY_LOCATION"") ""VM_NWVW_1""))"
+   6 - filter(COUNT(*)>=10)
+"   8 - access(""P"".""COLLISION_CASE_ID""=""C"".""CASE_ID"")"
+"   9 - filter(""C"".""COUNTY_CITY_LOCATION"" IS NOT NULL)"
+"  10 - filter(""P"".""STATEWIDE_VEHICLE_TYPE_ID"" IS NOT NULL)"
+
 
 
 Q6:
@@ -233,6 +318,15 @@ Q7: => Improvement
 |   9 |      TABLE ACCESS FULL | PARTIES           |  7286K|   493M|       | 29872   (1)| 00:00:02 |
 ----------------------------------------------------------------------------------------------------
 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+"   1 - filter(MIN(""V"".""VICTIM_AGE"")>100)"
+"   3 - access(""V"".""PARTY_ID""=""P"".""ID"")"
+"   5 - access(""P"".""COLLISION_CASE_ID""=""C"".""CASE_ID"")"
+"   6 - access(""C"".""TYPE_OF_COLLISION_ID""=""TOC"".""ID"")"
+"   7 - filter(""TOC"".""DEFINITION""='Vehicle/Pedestrian')"
+
 CREATE INDEX VICTIMS_IDX_PARTY_ID_VICTIM_AGE on VICTIMS(PARTY_ID, VICTIM_AGE);
 CREATE INDEX PARTIES_IDX_COLLISION_CASE_ID_ID on PARTIES(COLLISION_CASE_ID, ID);
 CREATE INDEX COLLISIONS_IDX_CASE_ID_TYPE_OF_COLLISION_ID on COLLISIONS(CASE_ID, TYPE_OF_COLLISION_ID);
@@ -252,10 +346,18 @@ CREATE INDEX TYPE_OF_COLLISION_IDX_DEFINITION_ID on TYPE_OF_COLLISION(DEFINITION
 |   8 |       INDEX FAST FULL SCAN| COLLISIONS_IDX_CASE_ID_TYPE_OF_COLLISION_ID |  3678K|   235M|       | 10848   (1)| 00:00:01 |
 |   9 |      INDEX FAST FULL SCAN | PARTIES_IDX_COLLISION_CASE_ID_ID            |  7286K|   493M|       | 22688   (1)| 00:00:01 |
 ---------------------------------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+"   1 - filter(MIN(""V"".""VICTIM_AGE"")>100)"
+"   3 - access(""V"".""PARTY_ID""=""P"".""ID"")"
+"   5 - access(""P"".""COLLISION_CASE_ID""=""C"".""CASE_ID"")"
+"   6 - access(""C"".""TYPE_OF_COLLISION_ID""=""TOC"".""ID"")"
+"   7 - access(""TOC"".""DEFINITION""='Vehicle/Pedestrian')"
 
 
 Q8: => Improvement
-
 ------------------------------------------------------------------------------------------------
 | Id  | Operation             | Name                   | Rows  | Bytes | Cost (%CPU)| Time     |
 ------------------------------------------------------------------------------------------------
@@ -267,6 +369,14 @@ Q8: => Improvement
 |   5 |      TABLE ACCESS FULL| STATEWIDE_VEHICLE_TYPE |    15 |   330 |     3   (0)| 00:00:01 |
 |*  6 |      TABLE ACCESS FULL| PARTIES                |  5415K|    67M| 29919   (1)| 00:00:02 |
 ------------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   2 - filter(COUNT(*)>=10)
+"   4 - access(""P"".""STATEWIDE_VEHICLE_TYPE_ID""=""SVT"".""ID"")"
+"   6 - filter(""P"".""STATEWIDE_VEHICLE_TYPE_ID"" IS NOT NULL AND ""P"".""VEHICLE_YEAR"" IS NOT "
+"              NULL AND ""P"".""VEHICLE_MAKE"" IS NOT NULL)"
 
 CREATE INDEX STATEWIDE_VEHICLE_TYPE_IDX_DEFINITION_ID on STATEWIDE_VEHICLE_TYPE(DEFINITION, ID);
 CREATE INDEX PARTIES_IDX_STATEWIDE_VEHICLE_TYPE_ID_VEHICLE_MAKE_VEHICLE_YEAR on PARTIES(STATEWIDE_VEHICLE_TYPE_ID, VEHICLE_MAKE, VEHICLE_YEAR);
@@ -282,7 +392,14 @@ CREATE INDEX PARTIES_IDX_STATEWIDE_VEHICLE_TYPE_ID_VEHICLE_MAKE_VEHICLE_YEAR on 
 |   5 |      INDEX FULL SCAN     | STATEWIDE_VEHICLE_TYPE_IDX_DEFINITION_ID                        |    15 |   330 |     1   (0)| 00:00:01 |
 |*  6 |      INDEX FAST FULL SCAN| PARTIES_IDX_STATEWIDE_VEHICLE_TYPE_ID_VEHICLE_MAKE_VEHICLE_YEAR |  5415K|    67M|  6434   (1)| 00:00:01 |
 --------------------------------------------------------------------------------------------------------------------------------------------
-
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   2 - filter(COUNT(*)>=10)
+"   4 - access(""P"".""STATEWIDE_VEHICLE_TYPE_ID""=""SVT"".""ID"")"
+"   6 - filter(""P"".""STATEWIDE_VEHICLE_TYPE_ID"" IS NOT NULL AND ""P"".""VEHICLE_YEAR"" IS NOT NULL AND ""P"".""VEHICLE_MAKE"" IS NOT NULL)"
+ 
 
 Q9: => No success
 
