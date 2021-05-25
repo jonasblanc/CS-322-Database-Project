@@ -320,9 +320,14 @@ FROM (
                     when l.DEFINITION like '%dark%' then 'NIGHT_COLLISION'
                     when l.DEFINITION = 'Dusk - Dawn' then
                         case
-                            when C.COLLISION_DATE is null then 'NOT_ENOUGH_DATA'
+--                             when C.COLLISION_DATE is null then 'NOT_ENOUGH_DATA'
                             when C.COLLISION_DATE is not null then
                                 case
+                                    -- here should we check like that or
+--                                     case
+--                                         when EXTRACT(MONTH FROM C.COLLISION_DATE) < 13 then 'DAWN_COLLISIONS'
+--                                         else 'DUSK_COLLISION'
+--                                         end
                                     WHEN ((EXTRACT(MONTH FROM C.COLLISION_DATE) BETWEEN '4' AND '8'
                                         AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '20' AND '21')
                                         OR (EXTRACT(MONTH FROM C.COLLISION_DATE) NOT BETWEEN '4' AND '8'
@@ -334,7 +339,7 @@ FROM (
                                             AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '6' AND '7'))
                                         THEN 'DAWN_COLLISIONS'
 
-                                    else 'NOT_ENOUGH_DATA'
+--                                     else 'NOT_ENOUGH_DATA'
                                     end
                             end
                     else
@@ -364,12 +369,13 @@ FROM (
                                         and extract(hour from COLLISION_TIME) < 18 then 'DAY_COLLISIONS'
                                     when extract(hour from COLLISION_TIME) < 4
                                         and extract(hour from COLLISION_TIME) > 21 then 'NIGHT_COLLISIONS'
-                                    else 'UNKNOWN'
+--                                     else 'NOT_ENOUGH_DATA'
                                     end
                             end
                     end as TIME_PERIOD
          FROM COLLISIONS C
                   left outer join LIGHTING L on C.LIGHTING_ID = L.ID
      )
+where TIME_PERIOD is not null
 GROUP BY TIME_PERIOD
 ORDER BY NUMBER_ACCIDENT DESC;
