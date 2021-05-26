@@ -179,7 +179,7 @@ with average_age(COLLISION_CASE_ID, COUNTY_CITY_LOCATION, POPULATION_ID, V_AGE) 
                 V_AGE
          FROM average_age
      )
-select Row_Number, COLLISION_CASE_ID, COUNTY_CITY_LOCATION, P.DEFINITION, ROUND(V_AGE, 2) as "average victim age"
+select COLLISION_CASE_ID, COUNTY_CITY_LOCATION, P.DEFINITION, V_AGE as AVERAGE_VICTIM_AGE
 from rws
          INNER JOIN POPULATION P ON P.ID = POPULATION_ID
 where Row_Number <= 10
