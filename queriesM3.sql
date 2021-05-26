@@ -72,14 +72,14 @@ WHERE SWT.ID = STATS_COLLISIONS_HOLE.SVT_ID;
 
 --QUERY 3
 SELECT P.VEHICLE_MAKE, COUNT(*) AS NUMBER_OF_VICTIMS_KILLED_OR_WITH_SEVERE_INJURIES
-from PARTIES P,
+FROM PARTIES P,
      VICTIMS V,
      VICTIM_DEGREE_OF_INJURY VDOI
 WHERE P.ID = V.PARTY_ID
   AND V.VICTIM_DEGREE_OF_INJURY_ID = VDOI.ID
   AND (VDOI.DEFINITION = 'Killed' OR VDOI.DEFINITION = 'Severe Injury')
-  and P.VEHICLE_MAKE is not NULL -- NULL is the 4th more represented, not really interesting
-group by P.VEHICLE_MAKE
+  AND P.VEHICLE_MAKE IS NOT NULL -- NULL is the 4th more represented, not really interesting
+GROUP BY P.VEHICLE_MAKE
 order by COUNT(*) DESC
     FETCH FIRST 10 ROW ONLY;
 
@@ -199,7 +199,8 @@ WHERE V.PARTY_ID = P.ID
   AND C.TYPE_OF_COLLISION_ID = TOC.ID
   AND TOC.DEFINITION = 'Vehicle/Pedestrian'
 GROUP BY CASE_ID
-HAVING MIN(V.VICTIM_AGE) > 100;
+HAVING MIN(V.VICTIM_AGE) > 100
+ORDER BY C.CASE_ID;
 
 --Query 8
 -- Find the vehicles that have participated in at least 10 collisions.
@@ -239,7 +240,7 @@ SELECT TIME_PERIOD, COUNT(*) as NUMBER_ACCIDENT
 FROM (
          SELECT CASE
                     when l.DEFINITION = 'Daylight' then 'DAY_COLLISIONS'
-                    when l.DEFINITION like '%dark%' then 'NIGHT_COLLISION'
+                    when l.DEFINITION like '%Dark%' then 'NIGHT_COLLISION'
                     when l.DEFINITION = 'Dusk - Dawn' then
                         case
                             when C.COLLISION_DATE is not null then
