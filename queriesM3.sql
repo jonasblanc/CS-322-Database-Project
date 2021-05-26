@@ -64,21 +64,25 @@ ORDER BY NUMBER_AT_FAULT / TOTAL_NUMBER DESC;
 -- Query 2
 SELECT SWT.DEFINITION, STATS_COLLISIONS_HOLE.NUMBER_OF_COLLISION
 FROM STATEWIDE_VEHICLE_TYPE SWT,
-     (  SELECT P.STATEWIDE_VEHICLE_TYPE_ID AS SVT_ID, COUNT(*) AS NUMBER_OF_COLLISION
-         FROM PARTIES P, COLLISION_WITH_ROAD_CONDITION CWRC, ROAD_CONDITION RC
-         WHERE P.STATEWIDE_VEHICLE_TYPE_ID IS NOT NULL
-           AND P.COLLISION_CASE_ID = CWRC.CASE_ID
-           AND CWRC.ROAD_CONDITION_ID = RC.ID
-           AND RC.DEFINITION = 'Holes, Deep Ruts'
-         GROUP BY P.STATEWIDE_VEHICLE_TYPE_ID
-         ORDER BY COUNT(*) DESC
-             FETCH FIRST 5 ROW ONLY
+     (SELECT P.STATEWIDE_VEHICLE_TYPE_ID AS SVT_ID, COUNT(*) AS NUMBER_OF_COLLISION
+      FROM PARTIES P,
+           COLLISION_WITH_ROAD_CONDITION CWRC,
+           ROAD_CONDITION RC
+      WHERE P.STATEWIDE_VEHICLE_TYPE_ID IS NOT NULL
+        AND P.COLLISION_CASE_ID = CWRC.CASE_ID
+        AND CWRC.ROAD_CONDITION_ID = RC.ID
+        AND RC.DEFINITION = 'Holes, Deep Ruts'
+      GROUP BY P.STATEWIDE_VEHICLE_TYPE_ID
+      ORDER BY COUNT(*) DESC
+          FETCH FIRST 5 ROW ONLY
      ) STATS_COLLISIONS_HOLE
 WHERE SWT.ID = STATS_COLLISIONS_HOLE.SVT_ID;
 
 --QUERY 3
 SELECT P.VEHICLE_MAKE, COUNT(*) AS NUMBER_OF_VICTIMS_KILLED_OR_WITH_SEVERE_INJURIES
-from PARTIES P, VICTIMS V, VICTIM_DEGREE_OF_INJURY VDOI
+from PARTIES P,
+     VICTIMS V,
+     VICTIM_DEGREE_OF_INJURY VDOI
 WHERE P.ID = V.PARTY_ID
   AND V.VICTIM_DEGREE_OF_INJURY_ID = VDOI.ID
   AND (VDOI.DEFINITION = 'Killed' OR VDOI.DEFINITION = 'Severe Injury')
@@ -144,7 +148,7 @@ FROM (SELECT TYPE_CITY_TO_ACCIDENT_COUNT.TYPE
            ) TYPE_CITY_TO_ACCIDENT_COUNT
       GROUP BY TYPE_CITY_TO_ACCIDENT_COUNT.TYPE
       HAVING COUNT(*) >= (SELECT COUNT(UNIQUE (C.COUNTY_CITY_LOCATION)) / 2
-                         FROM COLLISIONS C
+                          FROM COLLISIONS C
       )
      ) TYPE_TO_CITY_COUNT;
 
@@ -198,37 +202,39 @@ FROM (SELECT TYPE_CITY_TO_ACCIDENT_COUNT.TYPE
 --
 
 with average_age(COLLISION_CASE_ID, COUNTY_CITY_LOCATION, POPULATION_ID, V_AGE) as
-(
-SELECT distinct COLLISION_CASE_ID, COUNTY_CITY_LOCATION,
+         (
+             SELECT distinct COLLISION_CASE_ID,
+                             COUNTY_CITY_LOCATION,
+                             POPULATION_ID,
+                             avg(v.VICTIM_AGE) OVER (PARTITION BY C.CASE_ID) as v_age
+             FROM COLLISIONS C
+                      INNER JOIN PARTIES on C.CASE_ID = PARTIES.COLLISION_CASE_ID
+                      inner join VICTIMS V on PARTIES.ID = V.PARTY_ID
+             WHERE C.COUNTY_CITY_LOCATION in (
+                 SELECT distinct COUNTY_CITY_LOCATION
+                 from COLLISIONS C
+                          INNER JOIN POPULATION P ON P.ID = C.POPULATION_ID
+                 where C.POPULATION_ID in
+                       (
+                           SELECT distinct (C.POPULATION_ID)
+                           FROM COLLISIONS C --where c.POPULATION_ID is not null
+                           WHERE P.DEFINITION = 'Incorporated (over 250000)'
+                       )
+                     FETCH FIRST 3 ROWS ONLY
+             )
+         ),
+     rws as (
+         SELECT ROW_NUMBER() OVER (PARTITION BY COUNTY_CITY_LOCATION
+             ORDER BY V_AGE ASC ) AS Row_Number,
+                COLLISION_CASE_ID,
+                COUNTY_CITY_LOCATION,
                 POPULATION_ID,
-                avg(v.VICTIM_AGE) OVER (PARTITION BY C.CASE_ID) as v_age
-FROM COLLISIONS C
-         INNER JOIN PARTIES on C.CASE_ID = PARTIES.COLLISION_CASE_ID
-         inner join VICTIMS V on PARTIES.ID = V.PARTY_ID
-WHERE C.COUNTY_CITY_LOCATION in (
-    SELECT distinct COUNTY_CITY_LOCATION
-    from COLLISIONS C
-    INNER JOIN POPULATION P ON P.ID = C.POPULATION_ID
-    where C.POPULATION_ID in
-          (
-              SELECT distinct (C.POPULATION_ID)
-              FROM COLLISIONS C --where c.POPULATION_ID is not null
-              WHERE P.DEFINITION = 'Incorporated (over 250000)'
-          )
-        FETCH FIRST 3 ROWS ONLY
-)
-    ), rws as (
-    SELECT ROW_NUMBER() OVER (PARTITION BY COUNTY_CITY_LOCATION
-        ORDER BY V_AGE ASC ) AS Row_Number,
-           COLLISION_CASE_ID,
-           COUNTY_CITY_LOCATION,
-           POPULATION_ID,
-           V_AGE
-    FROM average_age
-)
-select Row_Number, COLLISION_CASE_ID,COUNTY_CITY_LOCATION,P.DEFINITION, ROUND(V_AGE,2) as "average victim age"
+                V_AGE
+         FROM average_age
+     )
+select Row_Number, COLLISION_CASE_ID, COUNTY_CITY_LOCATION, P.DEFINITION, ROUND(V_AGE, 2) as "average victim age"
 from rws
-INNER JOIN POPULATION P ON P.ID = POPULATION_ID
+         INNER JOIN POPULATION P ON P.ID = POPULATION_ID
 where Row_Number <= 10
 order by COUNTY_CITY_LOCATION, V_AGE asc;
 
@@ -237,7 +243,10 @@ order by COUNTY_CITY_LOCATION, V_AGE asc;
 --Find all collisions that satisfy the following: the collision was of type pedestrian and all victims were above 100 years old.
 -- For each of the qualifying collisions, show the collision id and the age of the eldest collision victim.
 SELECT C.CASE_ID, MAX(V.VICTIM_AGE) AS AGE_MAX
-FROM VICTIMS V, PARTIES P, COLLISIONS C, TYPE_OF_COLLISION TOC
+FROM VICTIMS V,
+     PARTIES P,
+     COLLISIONS C,
+     TYPE_OF_COLLISION TOC
 WHERE V.PARTY_ID = P.ID
   AND P.COLLISION_CASE_ID = C.CASE_ID
   AND C.TYPE_OF_COLLISION_ID = TOC.ID
@@ -250,11 +259,12 @@ HAVING MIN(V.VICTIM_AGE) > 100;
 -- Show the vehicle id and number of collisions the vehicle has participated in,
 -- sorted according to number of collisions (descending order).
 SELECT SVT.DEFINITION, P.VEHICLE_MAKE, P.VEHICLE_YEAR, COUNT(*) AS NUMBER_COLLISION
-FROM PARTIES P, STATEWIDE_VEHICLE_TYPE SVT
+FROM PARTIES P,
+     STATEWIDE_VEHICLE_TYPE SVT
 WHERE P.STATEWIDE_VEHICLE_TYPE_ID IS NOT NULL
-    AND P.VEHICLE_MAKE IS NOT NULL
-    AND P.VEHICLE_YEAR IS NOT NULL
-    AND P.STATEWIDE_VEHICLE_TYPE_ID = SVT.ID
+  AND P.VEHICLE_MAKE IS NOT NULL
+  AND P.VEHICLE_YEAR IS NOT NULL
+  AND P.STATEWIDE_VEHICLE_TYPE_ID = SVT.ID
 GROUP BY (SVT.DEFINITION, P.VEHICLE_MAKE, P.VEHICLE_YEAR)
 HAVING COUNT(*) >= 10
 ORDER BY COUNT(*) DESC;
@@ -297,7 +307,6 @@ FROM (
                                         OR (EXTRACT(MONTH FROM C.COLLISION_DATE) NOT BETWEEN '4' AND '8'
                                             AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '6' AND '7'))
                                         THEN 'DAWN_COLLISIONS'
-
                                     end
                             end
                     else
