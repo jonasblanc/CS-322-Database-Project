@@ -235,60 +235,59 @@ ORDER BY NUMBER_COLLISIONS DESC FETCH FIRST 10 ROWS ONLY;
 -- The remaining corresponding times are night and day.
 -- Display the number of accidents, and to which group it belongs, and make your conclusion based on
 -- absolute number of accidents in the given 4 periods.
-
 SELECT TIME_PERIOD, COUNT(*) as NUMBER_ACCIDENT
 FROM (
-         SELECT CASE
-                    when l.DEFINITION = 'Daylight' then 'DAY_COLLISIONS'
-                    when l.DEFINITION like '%Dark%' then 'NIGHT_COLLISION'
-                    when l.DEFINITION = 'Dusk - Dawn' then
-                        case
-                            when C.COLLISION_DATE is not null then
-                                case
-                                    WHEN ((EXTRACT(MONTH FROM C.COLLISION_DATE) BETWEEN '4' AND '8'
-                                        AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '20' AND '21')
-                                        OR (EXTRACT(MONTH FROM C.COLLISION_DATE) NOT BETWEEN '4' AND '8'
-                                            AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '18' AND '19'))
-                                        THEN 'DUSK_COLLISION'
-                                    WHEN ((EXTRACT(MONTH FROM C.COLLISION_DATE) BETWEEN '4' AND '8'
-                                        AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '4' AND '5')
-                                        OR (EXTRACT(MONTH FROM C.COLLISION_DATE) NOT BETWEEN '4' AND '8'
-                                            AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '6' AND '7'))
-                                        THEN 'DAWN_COLLISIONS'
-                                    end
-                            end
-                    else
-                        case
-                            when C.COLLISION_DATE is not null then
-                                CASE
-                                    WHEN ((EXTRACT(MONTH FROM C.COLLISION_DATE) BETWEEN '4' AND '8'
-                                        AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '20' AND '21')
-                                        OR (EXTRACT(MONTH FROM C.COLLISION_DATE) NOT BETWEEN '4' AND '8'
-                                            AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '18' AND '19'))
-                                        THEN 'DUSK_COLLISION'
-                                    WHEN ((EXTRACT(MONTH FROM C.COLLISION_DATE) BETWEEN '4' AND '8'
-                                        AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '4' AND '5')
-                                        OR (EXTRACT(MONTH FROM C.COLLISION_DATE) NOT BETWEEN '4' AND '8'
-                                            AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '6' AND '7'))
-                                        THEN 'DAWN_COLLISIONS'
-                                    WHEN (EXTRACT(MONTH FROM C.COLLISION_DATE) BETWEEN '4' AND '8'
-                                        AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '6' AND '19')
-                                        OR (EXTRACT(MONTH FROM C.COLLISION_DATE) NOT BETWEEN '4' AND '8'
-                                            AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '8' AND '17')
-                                        THEN 'DAY_COLLISIONS'
-                                    ELSE 'NIGHT_COLLISION'
-                                    end
-                            else
-                                case
-                                    when extract(hour from COLLISION_TIME) > 7
-                                        and extract(hour from COLLISION_TIME) < 18 then 'DAY_COLLISIONS'
-                                    when extract(hour from COLLISION_TIME) < 4
-                                        and extract(hour from COLLISION_TIME) > 21 then 'NIGHT_COLLISIONS'
-                                    end
-                            end
-                    end as TIME_PERIOD
-         FROM COLLISIONS C
-                  left outer join LIGHTING L on C.LIGHTING_ID = L.ID
+    SELECT CASE
+        when l.DEFINITION = 'Daylight' then 'DAY_COLLISIONS'
+        when l.DEFINITION like '%dark%' then 'NIGHT_COLLISIONS'
+        when l.DEFINITION = 'Dusk - Dawn' then
+            case
+                when C.COLLISION_DATE is not null then
+                    case
+                        WHEN ((EXTRACT(MONTH FROM C.COLLISION_DATE) BETWEEN '4' AND '8'
+                                AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '20' AND '21')
+                            OR (EXTRACT(MONTH FROM C.COLLISION_DATE) NOT BETWEEN '4' AND '8'
+                                AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '18' AND '19'))
+                            THEN 'DUSK_COLLISIONS'
+                        WHEN ((EXTRACT(MONTH FROM C.COLLISION_DATE) BETWEEN '4' AND '8'
+                                AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '4' AND '5')
+                            OR (EXTRACT(MONTH FROM C.COLLISION_DATE) NOT BETWEEN '4' AND '8'
+                                AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '6' AND '7'))
+                            THEN 'DAWN_COLLISIONS'
+                    end
+            end
+        else
+            case
+                when C.COLLISION_DATE is not null then
+                    CASE
+                        WHEN ((EXTRACT(MONTH FROM C.COLLISION_DATE) BETWEEN '4' AND '8'
+                                AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '20' AND '21')
+                            OR (EXTRACT(MONTH FROM C.COLLISION_DATE) NOT BETWEEN '4' AND '8'
+                                AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '18' AND '19'))
+                            THEN 'DUSK_COLLISIONS'
+                        WHEN ((EXTRACT(MONTH FROM C.COLLISION_DATE) BETWEEN '4' AND '8'
+                                AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '4' AND '5')
+                            OR (EXTRACT(MONTH FROM C.COLLISION_DATE) NOT BETWEEN '4' AND '8'
+                                AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '6' AND '7'))
+                            THEN 'DAWN_COLLISIONS'
+                        WHEN (EXTRACT(MONTH FROM C.COLLISION_DATE) BETWEEN '4' AND '8'
+                                AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '6' AND '19')
+                            OR (EXTRACT(MONTH FROM C.COLLISION_DATE) NOT BETWEEN '4' AND '8'
+                                AND EXTRACT(HOUR FROM C.COLLISION_TIME) BETWEEN '8' AND '17')
+                            THEN 'DAY_COLLISIONS'
+                        ELSE 'NIGHT_COLLISIONS'
+                    end
+        else
+            case
+                when extract(hour from COLLISION_TIME) > 7
+                    and extract(hour from COLLISION_TIME) < 18 then 'DAY_COLLISIONS'
+                when extract(hour from COLLISION_TIME) < 4
+                    and extract(hour from COLLISION_TIME) > 21 then 'NIGHT_COLLISIONS'
+            end
+        end
+    end as TIME_PERIOD
+    FROM COLLISIONS C
+    left outer join LIGHTING L on C.LIGHTING_ID = L.ID
      )
 where TIME_PERIOD is not null
 GROUP BY TIME_PERIOD
