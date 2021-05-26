@@ -164,7 +164,7 @@ with average_age(COLLISION_CASE_ID, COUNTY_CITY_LOCATION, POPULATION_ID, V_AGE) 
                  where C.POPULATION_ID in
                        (
                            SELECT distinct (C.POPULATION_ID)
-                           FROM COLLISIONS C --where c.POPULATION_ID is not null
+                           FROM COLLISIONS C
                            WHERE P.DEFINITION = 'Incorporated (over 250000)'
                        )
                      FETCH FIRST 3 ROWS ONLY
