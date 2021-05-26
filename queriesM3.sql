@@ -9,15 +9,7 @@
 -- QUERY 9: Done CJ
 -- QUERY 10: Done CJ => Possible to alias for case ? => TODO Take lightening into account in case of time is null
 
-
---Questions:
---          Query 8: What do you mean by vehicle_id
-
-
 --QUERY 1
--- question: * is it possible to use aliases for groupby to avoid copy-pasting cases?
---           * Is it possible to do only 1 query which retrieves at the same time for each category, the number at fault
---             and the total number (at fault + not at fault) by for example using a predicate in the count?
 SELECT FAULT.age_range, ROUND(NUMBER_AT_FAULT / TOTAL_NUMBER, 3) as RATIO_AT_FAULT
 FROM (SELECT case
                  when P.PARTY_AGE <= 18 then 'Underage'
@@ -155,51 +147,6 @@ FROM (SELECT TYPE_CITY_TO_ACCIDENT_COUNT.TYPE
 --Query 6
 -- For each of the top-3 most populated cities, show the city location, population, and the bottom-10
 -- collisions in terms of average victim age (show collision id and average victim age).
--- SELECT distinct (C.COUNTY_CITY_LOCATION), p.DEFINITION
---     from COLLISIONS C
---     INNER JOIN POPULATION P ON P.ID=C.POPULATION_ID
---     where C.POPULATION_ID in
---         (
---         SELECT  distinct (C.POPULATION_ID)
---         FROM COLLISIONS C --where c.POPULATION_ID is not null
---
---         WHERE INSTR(LOWER(P.DEFINITION), 'over') > 0
---         )
---     FETCH FIRST 3 ROWS ONLY;
---
--- SELECT distinct COUNTY_CITY_LOCATION,POPULATION_ID, avg(v.VICTIM_AGE) OVER (PARTITION BY COUNTY_CITY_LOCATION)
--- FROM COLLISIONS C INNER JOIN PARTIES P on C.CASE_ID = P.COLLISION_CASE_ID inner join VICTIMS V on P.ID = V.PARTY_ID
--- WHERE C.COUNTY_CITY_LOCATION in (
---          SELECT distinct COUNTY_CITY_LOCATION
---          from COLLISIONS C
---                   INNER JOIN POPULATION P ON P.ID = C.POPULATION_ID
---          where C.POPULATION_ID in
---                (
---                    SELECT distinct (C.POPULATION_ID)
---                    FROM COLLISIONS C --where c.POPULATION_ID is not null
---
---                    WHERE INSTR(LOWER(P.DEFINITION), 'over') > 0
---                )
---              FETCH FIRST 3 ROWS ONLY
---      );
---
--- SELECT distinct COUNTY_CITY_LOCATION,POPULATION_ID, avg(v.VICTIM_AGE) OVER (PARTITION BY COUNTY_CITY_LOCATION, c.CASE_ID ) as v_age
--- FROM COLLISIONS C INNER JOIN PARTIES P on C.CASE_ID = P.COLLISION_CASE_ID inner join VICTIMS V on P.ID = V.PARTY_ID
--- WHERE C.COUNTY_CITY_LOCATION in (
---          SELECT distinct COUNTY_CITY_LOCATION
---          from COLLISIONS C
---                   INNER JOIN POPULATION P ON P.ID = C.POPULATION_ID
---          where C.POPULATION_ID in
---                (
---                    SELECT distinct (C.POPULATION_ID)
---                    FROM COLLISIONS C --where c.POPULATION_ID is not null
---
---                    WHERE INSTR(LOWER(P.DEFINITION), 'over') > 0
---                )
---              FETCH FIRST 3 ROWS ONLY
---      )
--- ORDER BY v_age;-- FETCH FIRST 10 rows only;
---
 
 with average_age(COLLISION_CASE_ID, COUNTY_CITY_LOCATION, POPULATION_ID, V_AGE) as
          (
